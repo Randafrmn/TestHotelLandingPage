@@ -74,7 +74,7 @@
           style={{
             borderRadius: "12px",
             maxWidth: isMobile ? "350px" : "1060px",
-          height: isMobile ? "calc(100vh - 8px)" : `${MODAL_H}px`,
+          height: isMobile ? "calc(100vh - 28px)" : `${MODAL_H}px`,
             flexDirection: isMobile ? "column" : "row",
           }}
           onClick={(e) => e.stopPropagation()}
