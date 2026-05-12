@@ -38,7 +38,7 @@ export function About() {
 
   // translateX so that current slide aligns after the peek gap
   const offsetVw = -(index * slideW);
-  const offsetPx = -(index * gapPx) + peekPx + gapPx;
+  const offsetPx = -(index * gapPx) + peekPx;
 
   const go = (dir: 1 | -1) => {
     if (animating) return;
@@ -91,6 +91,19 @@ export function About() {
             </p>
           </div>
 
+          {/* Arrows (desktop/tablet) */}
+          <div className="hidden md:flex">
+            <SliderNavButtons
+              onPrev={() => go(-1)}
+              onNext={() => go(1)}
+              prevDisabled={index === 0}
+              nextDisabled={false}
+              prevInactive
+              activeArrowFilter="brightness(0) invert(1)"
+              inactiveArrowFilter="brightness(0) invert(1) brightness(0.596)"
+            />
+          </div>
+
         </div>
       </Container>
 
@@ -133,8 +146,8 @@ export function About() {
         </div>
       </div>
 
-      {/* Arrows below carousel */}
-      <Container className="mt-6 flex justify-center">
+      {/* Arrows below carousel (mobile only) */}
+      <Container className="mt-6 flex justify-center md:hidden">
         <SliderNavButtons
           onPrev={() => go(-1)}
           onNext={() => go(1)}

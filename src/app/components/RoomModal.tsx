@@ -74,8 +74,9 @@
           style={{
             borderRadius: "12px",
             maxWidth: isMobile ? "350px" : "1060px",
-          height: isMobile ? "calc(100vh - 58px)" : `${MODAL_H}px`,
+            height: isMobile ? "calc(100vh - 58px)" : `${MODAL_H}px`,
             flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? "8px" : "0px",
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -86,7 +87,7 @@
             style={{
               width: isMobile ? "100%" : "52%",
               height: isMobile ? "210px" : "100%",
-              padding: isMobile ? "8px 8px 0 8px" : "16px 8px 16px 16px",
+            padding: isMobile ? "0px" : "16px 8px 16px 16px",
             }}
           >
             <div className="relative h-full overflow-hidden" style={{ borderRadius: "12px" }}>

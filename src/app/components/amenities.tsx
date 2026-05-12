@@ -1,4 +1,7 @@
+import { useCallback, useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import { Container } from "./shared/Container";
+import { SliderNavButtons } from "./shared/SliderNavButtons";
 import Amenities1Src from "@/assets/icons/Amenities1.svg";
 import Amenities2Src from "@/assets/icons/Amenities2.svg";
 import Amenities3Src from "@/assets/icons/Amenities3.svg";
@@ -44,19 +47,46 @@ const ITEMS = [
 /* ─── Component ─────────────────────────────────────────────────── */
 
 export function Amenities() {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: "start",
+    slidesToScroll: 1,
+    duration: 30,
+  });
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const update = () => {
+      setCanPrev(emblaApi.canScrollPrev());
+      setCanNext(emblaApi.canScrollNext());
+    };
+    update();
+    emblaApi.on("select", update);
+    emblaApi.on("reInit", update);
+    return () => {
+      emblaApi.off("select", update);
+      emblaApi.off("reInit", update);
+    };
+  }, [emblaApi]);
+
   return (
     <section id="amenities" className="bg-white py-20">
       <Container>
 
         {/* ── Header ── */}
-        <div className="mb-12 text-center">
-          <p className="monroe-regular mb-3 text-[16px] text-[rgba(50,50,50,1)]">
+        <div className="mb-10 text-center md:mb-12">
+          <p className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
             — Amenities —
           </p>
           <h2
             className="manrope-regular"
             style={{
-              fontSize: "40px",
+              fontSize: "clamp(24px, 3.6vw, 40px)",
               fontWeight: 400,
               lineHeight: "140%",
               letterSpacing: "0%",
@@ -68,7 +98,7 @@ export function Amenities() {
         </div>
 
         {/* ── Grid ── */}
-        <div className="grid grid-cols-3 gap-5">
+        <div className="hidden grid-cols-3 gap-5 md:grid">
           {ITEMS.map((item) => (
             <div
               key={item.title}
@@ -119,6 +149,73 @@ export function Amenities() {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* ── Mobile carousel: one card ── */}
+        <div className="md:hidden">
+          <div className="overflow-hidden px-2">
+            <div ref={emblaRef} className="overflow-visible">
+              <div className="flex gap-3 pr-2">
+              {ITEMS.map((item) => (
+                <div
+                  key={item.title}
+                  className="min-w-0 flex-[0_0_calc(100%-54px)] rounded-[8px]"
+                  style={{
+                    backgroundColor: "rgba(244, 243, 240, 1)",
+                    padding: "16px",
+                  }}
+                >
+                  <div
+                    className="mb-4 flex items-center justify-center"
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "8px",
+                      backgroundColor: "rgba(255, 255, 255, 1)",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={item.icon}
+                      alt=""
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                        objectFit: "contain",
+                        filter: "brightness(0) invert(67%) sepia(10%) saturate(675%) hue-rotate(358deg) brightness(89%) contrast(89%)",
+                      }}
+                    />
+                  </div>
+
+                  <h3
+                    className="manrope-regular mb-2"
+                    style={{ fontSize: "18px", fontWeight: 500, color: "rgba(50, 50, 50, 1)", lineHeight: "1.25" }}
+                  >
+                    {item.title}
+                  </h3>
+
+                  <p
+                    className="manrope-regular"
+                    style={{ fontSize: "13px", lineHeight: "160%", color: "rgba(50, 50, 50, 0.7)" }}
+                  >
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-center">
+            <SliderNavButtons
+              onPrev={scrollPrev}
+              onNext={scrollNext}
+              prevDisabled={!canPrev}
+              nextDisabled={!canNext}
+              activeArrowFilter="brightness(0) invert(1)"
+              inactiveArrowFilter="brightness(0) invert(1) brightness(0.596)"
+            />
+          </div>
         </div>
 
       </Container>
