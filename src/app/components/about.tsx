@@ -67,9 +67,9 @@ export function About() {
   const [animating, setAnimating] = useState(false);
   const [noTransition, setNoTransition] = useState(false);
   const [viewportW, setViewportW] = useState(390);
-  const dragStart = useRef<number | null>(null);
   const indexRef = useRef(START_IDX);
   const trackRef = useRef<HTMLDivElement>(null);
+  const swipeListenersCleanup = useRef<(() => void) | null>(null);
   const DRAG_THRESHOLD = 50; // px needed to trigger slide change
   const isMobile = viewportW < 768;
 
@@ -99,6 +99,13 @@ export function About() {
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      swipeListenersCleanup.current?.();
+      swipeListenersCleanup.current = null;
+    };
   }, []);
 
   const slideW = isMobile ? 84 : SLIDE_W;
@@ -141,28 +148,30 @@ export function About() {
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    dragStart.current = e.clientX;
-    const el = e.currentTarget as HTMLElement;
-    el.setPointerCapture(e.pointerId);
-  };
+    if (!e.isPrimary) return;
+    const startX = e.clientX;
+    const pointerId = e.pointerId;
 
-  const releaseCapture = (e: React.PointerEvent) => {
-    const el = e.currentTarget as HTMLElement;
-    try {
-      if (el.hasPointerCapture?.(e.pointerId)) el.releasePointerCapture(e.pointerId);
-    } catch {
-      /* ignore */
-    }
-  };
+    const finish = (ev: PointerEvent) => {
+      if (ev.pointerId !== pointerId) return;
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+      swipeListenersCleanup.current = null;
+      if (ev.type !== "pointerup") return;
+      const delta = ev.clientX - startX;
+      if (Math.abs(delta) >= DRAG_THRESHOLD) {
+        go(delta < 0 ? 1 : -1);
+      }
+    };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
-    releaseCapture(e);
-    if (dragStart.current === null) return;
-    const delta = e.clientX - dragStart.current;
-    dragStart.current = null;
-    if (Math.abs(delta) >= DRAG_THRESHOLD) {
-      go(delta < 0 ? 1 : -1);
-    }
+    swipeListenersCleanup.current?.();
+    swipeListenersCleanup.current = () => {
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+    };
+
+    window.addEventListener("pointerup", finish, { passive: true });
+    window.addEventListener("pointercancel", finish, { passive: true });
   };
 
   return (
@@ -211,13 +220,8 @@ export function About() {
 
       {/* ── Track ── */}
       <div
-        className="overflow-hidden"
+        className="touch-pan-x select-none overflow-hidden"
         onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={(e) => {
-          releaseCapture(e);
-          dragStart.current = null;
-        }}
       >
         <div
           ref={trackRef}
@@ -238,7 +242,7 @@ export function About() {
               key={`${i}-${img.alt}`}
               role="img"
               aria-label={img.alt}
-              className="flex-shrink-0 overflow-hidden bg-[#ebe8e4] [backface-visibility:hidden] [transform:translateZ(0)]"
+              className="flex-shrink-0 touch-pan-x overflow-hidden bg-[#ebe8e4] [backface-visibility:hidden] [transform:translateZ(0)]"
               style={{
                 width: `${slideW}vw`,
                 backgroundImage: `url(${img.src})`,
