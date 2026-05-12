@@ -48,7 +48,7 @@ import { SliderNavButtons } from "./shared/SliderNavButtons";
 
   export function Amenities() {
     const [emblaRef, emblaApi] = useEmblaCarousel({
-      loop: false,
+      loop: true,
       align: "start",
       slidesToScroll: 1,
       duration: 25,

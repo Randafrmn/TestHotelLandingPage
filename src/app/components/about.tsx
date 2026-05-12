@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
-import gsap from "gsap";
+import { useState, useRef, useEffect } from "react";
 import { Container } from "./shared/Container";
 import AboutImage1 from "@/assets/images/HeroImage1.svg";
 import AboutImage2 from "@/assets/images/HeroImage2.svg";
@@ -60,135 +59,6 @@ function preloadSlideImages(urls: readonly string[]) {
           im.src = src;
         }),
     ),
-  );
-}
-
-type SlideDef = (typeof SLIDES)[number];
-
-/** Carousel slide: subtle “liquid” pan on move + ripple on press (GSAP). */
-function AboutSlideCell({
-  img,
-  slideW,
-  isMobile,
-}: {
-  img: SlideDef;
-  slideW: number;
-  isMobile: boolean;
-}) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const rippleHostRef = useRef<HTMLDivElement>(null);
-  const xToRef = useRef<((v: string) => void) | null>(null);
-  const yToRef = useRef<((v: string) => void) | null>(null);
-  const lastRippleMs = useRef(0);
-
-  useLayoutEffect(() => {
-    const bg = bgRef.current;
-    if (!bg) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    xToRef.current = gsap.quickTo(bg, "backgroundPositionX", { duration: 0.72, ease: "power3.out" }) as unknown as (
-      v: string,
-    ) => void;
-    yToRef.current = gsap.quickTo(bg, "backgroundPositionY", { duration: 0.72, ease: "power3.out" }) as unknown as (
-      v: string,
-    ) => void;
-    return () => {
-      xToRef.current = null;
-      yToRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      const layer = rippleHostRef.current;
-      if (!layer) return;
-      layer.querySelectorAll(":scope > div").forEach((el) => {
-        gsap.killTweensOf(el);
-        el.remove();
-      });
-    };
-  }, []);
-
-  const spawnRipple = (clientX: number, clientY: number) => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const layer = rippleHostRef.current;
-    if (!layer) return;
-    const now = performance.now();
-    if (now - lastRippleMs.current < 160) return;
-    lastRippleMs.current = now;
-    const b = layer.getBoundingClientRect();
-    const x = clientX - b.left;
-    const y = clientY - b.top;
-    const ring = document.createElement("div");
-    ring.className = "pointer-events-none absolute rounded-full";
-    ring.setAttribute("aria-hidden", "true");
-    ring.style.left = `${x}px`;
-    ring.style.top = `${y}px`;
-    ring.style.width = "28px";
-    ring.style.height = "28px";
-    ring.style.border = "1.5px solid rgba(255,255,255,0.55)";
-    ring.style.boxShadow =
-      "0 0 20px rgba(200, 235, 255, 0.4), inset 0 0 12px rgba(255,255,255,0.12)";
-    ring.style.mixBlendMode = "soft-light";
-    layer.appendChild(ring);
-    gsap.set(ring, { xPercent: -50, yPercent: -50, scale: 0.25, opacity: 0.72 });
-    gsap.to(ring, {
-      scale: 3.8,
-      opacity: 0,
-      duration: 1.05,
-      ease: "power2.out",
-      onComplete: () => ring.remove(),
-    });
-  };
-
-  const onPointerMoveFluid = (e: React.PointerEvent) => {
-    const wrap = wrapRef.current;
-    const xTo = xToRef.current;
-    const yTo = yToRef.current;
-    if (!wrap || !xTo || !yTo) return;
-    const r = wrap.getBoundingClientRect();
-    const px = ((e.clientX - r.left) / Math.max(1, r.width)) * 100;
-    const py = ((e.clientY - r.top) / Math.max(1, r.height)) * 100;
-    xTo(`${px}%`);
-    yTo(`${py}%`);
-  };
-
-  const onPointerLeaveFluid = () => {
-    xToRef.current?.("50%");
-    yToRef.current?.("50%");
-  };
-
-  return (
-    <div
-      ref={wrapRef}
-      className="relative flex-shrink-0 overflow-hidden bg-[#ebe8e4] [backface-visibility:hidden] [transform:translateZ(0)]"
-      style={{
-        width: `${slideW}vw`,
-        WebkitTransform: "translateZ(0)",
-        ...(isMobile ? { aspectRatio: "1 / 1" as const } : { height: "460px" }),
-      }}
-    >
-      <div
-        ref={bgRef}
-        role="img"
-        aria-label={img.alt}
-        className="pointer-events-none absolute inset-0 [backface-visibility:hidden]"
-        style={{
-          backgroundImage: `url(${img.src})`,
-          backgroundSize: "118% 118%",
-          backgroundPosition: "50% 50%",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
-      <div
-        ref={rippleHostRef}
-        className="absolute inset-0 z-[1] touch-pan-x"
-        onPointerMove={onPointerMoveFluid}
-        onPointerLeave={onPointerLeaveFluid}
-        onPointerDown={(e) => spawnRipple(e.clientX, e.clientY)}
-        aria-hidden
-      />
-    </div>
   );
 }
 
@@ -364,7 +234,23 @@ export function About() {
           onTransitionEnd={handleTransitionEnd}
         >
           {slidesTriple.map((img, i) => (
-            <AboutSlideCell key={`${i}-${img.alt}`} img={img} slideW={slideW} isMobile={isMobile} />
+            <div
+              key={`${i}-${img.alt}`}
+              role="img"
+              aria-label={img.alt}
+              className="flex-shrink-0 overflow-hidden bg-[#ebe8e4] [backface-visibility:hidden] [transform:translateZ(0)]"
+              style={{
+                width: `${slideW}vw`,
+                backgroundImage: `url(${img.src})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                WebkitTransform: "translateZ(0)",
+                ...(isMobile
+                  ? { aspectRatio: "1 / 1" as const }
+                  : { height: "460px" }),
+              }}
+            />
           ))}
         </div>
       </div>

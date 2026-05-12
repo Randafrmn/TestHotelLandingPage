@@ -60,6 +60,12 @@ export function RoomModal({ room, onClose }: Props) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
+  useEffect(() => {
+    if (!modalEmblaApi) return;
+    modalEmblaApi.reInit();
+    setSelectedIdx(modalEmblaApi.selectedScrollSnap());
+  }, [modalEmblaApi, room]);
+
   const scrollPrev = useCallback(() => modalEmblaApi?.scrollPrev(), [modalEmblaApi]);
   const scrollNext = useCallback(() => modalEmblaApi?.scrollNext(), [modalEmblaApi]);
 
@@ -83,48 +89,48 @@ export function RoomModal({ room, onClose }: Props) {
 
         {/* ── Left: Carousel (framed) ── */}
         <div
-          className="relative flex flex-shrink-0 flex-col"
+          className="relative flex min-h-0 w-full flex-shrink-0 flex-col md:w-[52%]"
           style={{
-            width: isMobile ? "100%" : "52%",
-            minHeight: isMobile ? 210 : MODAL_H,
+            minHeight: isMobile ? undefined : MODAL_H,
             alignSelf: isMobile ? undefined : "stretch",
-            padding: isMobile ? "0px" : "16px 8px 16px 16px",
+            padding: isMobile ? "16px" : "16px 8px 16px 16px",
           }}
         >
           <div
-            className="relative flex-1 overflow-hidden"
+            className={`relative isolate min-h-0 overflow-hidden ${isMobile ? "aspect-square w-full" : "flex-1"}`}
             style={{
-              borderRadius: "12px",
-              height: isMobile ? "210px" : "100%",
-              minHeight: isMobile ? "210px" : MODAL_H - 32,
+              borderRadius: isMobile ? "20px" : "12px",
+              height: isMobile ? undefined : "100%",
+              minHeight: isMobile ? undefined : MODAL_H - 32,
             }}
           >
-            <div ref={modalEmblaRef} style={{ overflow: "hidden", height: "100%" }}>
-              <div className="flex" style={{ height: "100%" }}>
+            <div ref={modalEmblaRef} className="h-full w-full overflow-hidden">
+              <div className="flex h-full">
                 {room.gallery.map((src, i) => (
                   <div
-                    key={i}
-                    className="flex-shrink-0"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      backgroundImage: `url(${src})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  />
+                    key={`${room.name}-${i}-${src}`}
+                    className="relative h-full min-h-0 min-w-0 shrink-0 grow-0 basis-full"
+                    style={{ flex: "0 0 100%" }}
+                  >
+                    <img
+                      src={src}
+                      alt=""
+                      className="pointer-events-none block h-full w-full select-none object-cover"
+                      draggable={false}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
 
-            <div className="absolute left-3 top-1/2 -translate-y-1/2">
+            <div className={`absolute top-1/2 -translate-y-1/2 ${isMobile ? "left-2" : "left-3"}`}>
               <CarouselArrowButton direction="prev" onClick={scrollPrev} className="rounded-2px" />
             </div>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div className={`absolute top-1/2 -translate-y-1/2 ${isMobile ? "right-2" : "right-3"}`}>
               <CarouselArrowButton direction="next" onClick={scrollNext} className="rounded-2px" />
             </div>
 
-            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
+            <div className={`absolute left-1/2 flex -translate-x-1/2 items-center gap-2 ${isMobile ? "bottom-3" : "bottom-4"}`}>
               {room.gallery.map((_, i) => (
                 <button
                   key={i}

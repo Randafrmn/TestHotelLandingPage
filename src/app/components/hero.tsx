@@ -58,7 +58,11 @@ export function Hero() {
   }, [emblaApi]);
 
   return (
-    <section data-section-animate className="relative min-h-screen w-full overflow-hidden">
+    <section
+      data-section-animate
+      data-entrance-pace="slow"
+      className="relative min-h-screen w-full overflow-hidden"
+    >
       {/* ── Carousel ── */}
       <div ref={emblaRef} className="absolute inset-0 overflow-hidden">
         <div className="flex h-full touch-pan-y will-change-transform [transform:translate3d(0,0,0)]">
@@ -187,7 +191,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="flex h-[70px] flex-1 items-center gap-3 px-4 py-2 text-left transition-colors md:h-[72px] md:px-5"
+              className="flex h-[70px] flex-1 items-center gap-3 px-4 py-2 text-left transition-[color,background-color,opacity,transform] duration-500 ease-out md:h-[72px] md:px-5"
             >
               <img src={PeopleSrc} alt="" className="h-4 w-4 flex-shrink-0" style={{ filter: "brightness(0) invert(1)" }} />
               <div className="min-w-0 flex-1">
@@ -233,7 +237,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
           <PopoverTrigger asChild>
             <button 
               type="button"
-              className="flex h-[70px] flex-1 items-center gap-3 px-4 py-2 text-left transition-colors md:h-[72px] md:px-5 md:py-5"
+              className="flex h-[70px] flex-1 items-center gap-3 px-4 py-2 text-left transition-[color,background-color,opacity,transform] duration-500 ease-out md:h-[72px] md:px-5 md:py-5"
             >
               <img src={CalenderSrc} alt="" className="h-4 w-4 flex-shrink-0" style={{ filter: "brightness(0) invert(1)" }} />
               <div className="min-w-0 flex-1">
@@ -297,7 +301,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
         {/* Request CTA */}
         <button
           type="submit"
-          className="monroe-regular h-[42px] w-full bg-[#A49781] text-[14px] uppercase tracking-[0.1em] text-white transition-colors hover:bg-[#8f8370] md:h-auto md:w-auto md:px-8 md:text-sm"
+          className="monroe-regular h-[42px] w-full bg-[#A49781] text-[14px] uppercase tracking-[0.1em] text-white transition-[background-color,color,transform] duration-500 ease-out hover:bg-[#8f8370] md:h-auto md:w-auto md:px-8 md:text-sm"
         >
           Request
         </button>
@@ -364,7 +368,7 @@ function StepperRow({
           type="button"
           disabled={value <= min}
           onClick={() => onChange(value - 1)}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors hover:border-[#A49781] hover:text-[#A49781] disabled:cursor-not-allowed disabled:opacity-20"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-white/70 transition-[border-color,color,transform,opacity] duration-500 ease-out hover:border-[#A49781] hover:text-[#A49781] disabled:cursor-not-allowed disabled:opacity-20"
         >
           <Minus className="h-3 w-3" />
         </button>
@@ -375,7 +379,7 @@ function StepperRow({
           type="button"
           disabled={value >= max}
           onClick={() => onChange(value + 1)}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors hover:border-[#A49781] hover:text-[#A49781] disabled:cursor-not-allowed disabled:opacity-20"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-white/70 transition-[border-color,color,transform,opacity] duration-500 ease-out hover:border-[#A49781] hover:text-[#A49781] disabled:cursor-not-allowed disabled:opacity-20"
         >
           <Plus className="h-3 w-3" />
         </button>
