@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ArrowSrc from "@/assets/icons/Arrow.svg";
 
 import Memories1Src from "@/assets/images/memories1.svg";
@@ -35,7 +35,8 @@ const GALLERY: Record<Category, string[]> = {
 };
 
 const CATEGORIES: Category[] = ["All Photos", "Rooms", "Wellness", "Culinary"];
-const THUMBS_PER_PAGE = 8;
+const THUMBS_DESKTOP = 8;
+const THUMBS_MOBILE = 4;
 
 interface Props {
   onClose: () => void;
@@ -45,14 +46,31 @@ export function ModalMemories({ onClose }: Props) {
   const [activeCategory, setActiveCategory] = useState<Category>("All Photos");
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [thumbPage, setThumbPage] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const thumbsPerPage = isMobile ? THUMBS_MOBILE : THUMBS_DESKTOP;
 
   const images = GALLERY[activeCategory];
-  const totalPages = Math.ceil(images.length / THUMBS_PER_PAGE);
-  const visibleThumbs = images.slice(
-    thumbPage * THUMBS_PER_PAGE,
-    (thumbPage + 1) * THUMBS_PER_PAGE,
+  const totalPages = Math.max(1, Math.ceil(images.length / thumbsPerPage));
+
+  const visibleThumbs = useMemo(
+    () => images.slice(thumbPage * thumbsPerPage, (thumbPage + 1) * thumbsPerPage),
+    [images, thumbPage, thumbsPerPage],
   );
+
   const mainImage = images[selectedIdx] ?? images[0];
+
+  useEffect(() => {
+    setThumbPage((p) => Math.min(p, Math.max(0, totalPages - 1)));
+  }, [totalPages, thumbsPerPage]);
 
   function handleCategory(cat: Category) {
     setActiveCategory(cat);
@@ -61,7 +79,7 @@ export function ModalMemories({ onClose }: Props) {
   }
 
   function handleThumbClick(pageRelativeIdx: number) {
-    setSelectedIdx(thumbPage * THUMBS_PER_PAGE + pageRelativeIdx);
+    setSelectedIdx(thumbPage * thumbsPerPage + pageRelativeIdx);
   }
 
   function handlePrevPage() {
@@ -72,7 +90,6 @@ export function ModalMemories({ onClose }: Props) {
     setThumbPage((p) => Math.min(totalPages - 1, p + 1));
   }
 
-  /* lock body scroll */
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -80,7 +97,6 @@ export function ModalMemories({ onClose }: Props) {
     };
   }, []);
 
-  /* close on Escape */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -99,27 +115,31 @@ export function ModalMemories({ onClose }: Props) {
         .gallery-preview-enter {
           animation: gallery-fade 0.3s ease forwards;
         }
+        .modal-memories-tabs::-webkit-scrollbar {
+          display: none;
+        }
+        .modal-memories-tabs {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
       `}</style>
 
-      {/* Backdrop — click outside to close */}
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center"
+        className="fixed inset-0 z-50 flex flex-col justify-start pt-14 pb-6 pl-4 pr-4 md:items-center md:justify-center md:px-6 md:pb-6 md:pt-12"
         style={{
-          backgroundColor: "rgba(50,50,50,0.8)",
+          backgroundColor: "rgba(50,50,50,0.92)",
           backdropFilter: "blur(22px)",
           WebkitBackdropFilter: "blur(22px)",
-          padding: "48px 24px 24px",
         }}
         onClick={onClose}
       >
-        {/* X close button — floats at top-right of viewport */}
         <button
           type="button"
           onClick={onClose}
           className="fixed flex items-center justify-center transition-opacity hover:opacity-70"
           style={{
             top: "20px",
-            right: "24px",
+            right: "20px",
             width: "34px",
             height: "34px",
             border: "none",
@@ -138,62 +158,65 @@ export function ModalMemories({ onClose }: Props) {
           </svg>
         </button>
 
-        {/* Modal card — transparent, content floats on backdrop */}
         <div
-          className="flex w-full flex-col"
-          style={{
-            maxWidth: "500px",
-            backgroundColor: "transparent",
-            padding: "0px",
-          }}
+          className="relative z-10 mx-auto flex w-full min-w-0 max-w-full flex-col md:max-w-[500px]"
+          style={{ backgroundColor: "transparent" }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Category tabs — centered */}
+          {/* Category pills — horizontal scroll (mobile); centered wrap (desktop) */}
           <div
-            className="mb-4 flex items-center justify-center gap-2"
+            className="modal-memories-tabs mb-4 w-full min-w-0 shrink-0 touch-pan-x overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:touch-auto md:overflow-visible"
+            style={{ WebkitOverflowScrolling: "touch" }}
           >
-            {CATEGORIES.map((cat) => {
-              const isActive = activeCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => handleCategory(cat)}
-                  className="manrope-regular transition-colors"
-                  style={{
-                    padding: "7px 18px",
-                    borderRadius: "8px",
-                    fontSize: "13px",
-                    border: isActive
-                      ? "1px solid transparent"
-                      : "1px solid rgba(255,255,255,0.22)",
-                    backgroundColor: isActive
-                      ? "rgba(255,255,255,1)"
-                      : "transparent",
-                    color: isActive
-                      ? "rgba(25,25,25,1)"
-                      : "rgba(255,255,255,0.82)",
-                    cursor: "pointer",
-                    fontWeight: isActive ? 500 : 400,
-                    letterSpacing: "0.01em",
-                  }}
-                >
-                  {cat}
-                </button>
-              );
-            })}
+            <div
+              className="flex w-max flex-nowrap gap-2 md:mx-auto md:w-full md:flex-wrap md:justify-center"
+              role="tablist"
+              aria-label="Gallery categories"
+            >
+              {CATEGORIES.map((cat) => {
+                const isActive = activeCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => handleCategory(cat)}
+                    className="manrope-regular shrink-0 whitespace-nowrap transition-colors"
+                    style={{
+                      padding: isMobile ? "10px 20px" : "7px 18px",
+                      borderRadius: "9999px",
+                      fontSize: isMobile ? "14px" : "13px",
+                      border: isActive
+                        ? "1px solid transparent"
+                        : "1px solid rgba(255,255,255,0.35)",
+                      backgroundColor: isActive
+                        ? "rgba(255,255,255,1)"
+                        : "transparent",
+                      color: isActive
+                        ? "rgba(25,25,25,1)"
+                        : "rgba(255,255,255,0.95)",
+                      cursor: "pointer",
+                      fontWeight: isActive ? 500 : 400,
+                      letterSpacing: "0.01em",
+                    }}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Main preview — with dark frame border */}
+          {/* Main preview */}
           <div
+            className="w-full shrink-0"
             style={{
-              width: "100%",
-              aspectRatio: "7 / 5",
-              borderRadius: "1px",
+              aspectRatio: isMobile ? "4 / 5" : "7 / 5",
+              borderRadius: isMobile ? "6px" : "1px",
               overflow: "hidden",
-              marginBottom: "8px",
+              marginBottom: isMobile ? "12px" : "8px",
               position: "relative",
-              flexShrink: 0,
             }}
           >
             <div
@@ -205,36 +228,30 @@ export function ModalMemories({ onClose }: Props) {
                 backgroundImage: `url(${mainImage})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                borderRadius: "1px",
+                borderRadius: isMobile ? "6px" : "1px",
               }}
             />
           </div>
 
-          {/* Thumbnail strip — always 8 equal slots, same total width as main image */}
+          {/* Thumbnail strip — square cells (4 cols mobile, 8 desktop) */}
           <div
+            className="grid w-full shrink-0 grid-cols-4 gap-1.5 md:grid-cols-8 md:gap-[5px]"
             style={{
-              display: "flex",
-              gap: "5px",
-              marginBottom: "14px",
-              borderRadius: "1px",
+              marginBottom: isMobile ? "18px" : "14px",
             }}
           >
-            {Array.from({ length: THUMBS_PER_PAGE }).map((_, i) => {
+            {Array.from({ length: thumbsPerPage }).map((_, i) => {
               const src = visibleThumbs[i];
-              const globalIdx = thumbPage * THUMBS_PER_PAGE + i;
+              const globalIdx = thumbPage * thumbsPerPage + i;
               const isSelected = globalIdx === selectedIdx;
 
               if (!src) {
-                /* empty slot — keeps layout stable */
                 return (
                   <div
                     key={`empty-${i}`}
+                    className={`aspect-square w-full min-h-0 ${isMobile ? "rounded-[4px]" : "rounded-[1px]"}`}
                     style={{
-                      flex: 1,
-                      minWidth: 0,
-                      height: "56px",
-                      borderRadius: "1px",
-                      backgroundColor: "rgba(255,255,255,0.04)",
+                      backgroundColor: "rgba(255,255,255,0.06)",
                     }}
                   />
                 );
@@ -245,10 +262,8 @@ export function ModalMemories({ onClose }: Props) {
                   key={`${src}-${globalIdx}`}
                   type="button"
                   onClick={() => handleThumbClick(i)}
+                  className={`aspect-square w-full min-h-0 overflow-hidden ${isMobile ? "rounded-[4px]" : "rounded-[1px]"}`}
                   style={{
-                    flex: 1,
-                    minWidth: 0,
-                    height: "56px",
                     border: "none",
                     padding: 0,
                     cursor: "pointer",
@@ -257,7 +272,6 @@ export function ModalMemories({ onClose }: Props) {
                     backgroundPosition: "center",
                     opacity: isSelected ? 1 : 0.55,
                     transition: "opacity 0.2s",
-                    borderRadius: "1px",
                     outline: isSelected
                       ? "2px solid rgba(164,151,129,1)"
                       : "none",
@@ -276,8 +290,7 @@ export function ModalMemories({ onClose }: Props) {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-center gap-3">
-            {/* Prev */}
+          <div className="flex shrink-0 items-center justify-center gap-3 pb-2">
             <button
               type="button"
               onClick={handlePrevPage}
@@ -288,12 +301,13 @@ export function ModalMemories({ onClose }: Props) {
                 height: 40,
                 borderRadius: 8,
                 border: "none",
-                cursor: "pointer",
+                cursor: thumbPage === 0 ? "default" : "pointer",
                 flexShrink: 0,
                 backgroundColor: thumbPage === 0
                   ? "rgba(255,255,255,0.5)"
                   : "rgba(255,255,255,1)",
                 transition: "background-color 0.3s",
+                opacity: thumbPage === 0 ? 0.85 : 1,
               }}
             >
               <img
@@ -310,13 +324,12 @@ export function ModalMemories({ onClose }: Props) {
               />
             </button>
 
-            {/* Page counter */}
             <span
               className="manrope-regular"
               style={{
                 fontSize: "13px",
-                color: "rgba(255,255,255,0.72)",
-                minWidth: "40px",
+                color: "rgba(255,255,255,0.85)",
+                minWidth: "44px",
                 textAlign: "center",
                 letterSpacing: "0.03em",
               }}
@@ -324,7 +337,6 @@ export function ModalMemories({ onClose }: Props) {
               {thumbPage + 1} / {totalPages}
             </span>
 
-            {/* Next */}
             <button
               type="button"
               onClick={handleNextPage}
@@ -335,12 +347,13 @@ export function ModalMemories({ onClose }: Props) {
                 height: 40,
                 borderRadius: 8,
                 border: "none",
-                cursor: "pointer",
+                cursor: thumbPage >= totalPages - 1 ? "default" : "pointer",
                 flexShrink: 0,
                 backgroundColor: thumbPage >= totalPages - 1
                   ? "rgba(255,255,255,0.5)"
                   : "rgba(255,255,255,1)",
                 transition: "background-color 0.3s",
+                opacity: thumbPage >= totalPages - 1 ? 0.85 : 1,
               }}
             >
               <img

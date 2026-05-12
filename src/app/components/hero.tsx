@@ -4,8 +4,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { Container } from "./shared/Container";
 import { CarouselArrowButton } from "./shared/CarouselArrowButton";
-import { CalendarDays, Minus, Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import PeopleSrc from "@/assets/icons/People.svg";
+import CalenderSrc from "@/assets/icons/Calender.svg";
 import ArrowDownSrc from "@/assets/icons/ArrowDown.svg";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
@@ -110,7 +111,7 @@ export function Hero() {
           {/* Title */}
           <h1
             className="manrope-regular mb-4 max-w-2xl text-white sm:mb-6"
-            style={{ fontSize: "clamp(1rem, 4.8vw, 3.3rem)", lineHeight: 1.05 }}
+            style={{ fontSize: "clamp(1rem, 4.8vw, 2rem)", lineHeight: 1.05 }}
           >
             The Silence of the Alps, Redefined.
           </h1>
@@ -173,24 +174,24 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
         }));
         document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
       }}
-      className="w-full max-w-[765px] overflow-hidden rounded-xl bg-[#40403F] shadow-2xl"
+      className="w-full max-w-[765px] overflow-hidden rounded-xl shadow-2xl bg-[#40403F]"
     >
       {/* Guests + Arrival & Departure joined section */}
       <div className="flex flex-col md:flex-row">
-        <div className="flex flex-1 flex-col md:flex-row">
+        <div className="flex flex-1 flex-col bg-black/35 backdrop-blur-2xl md:flex-row md:bg-transparent md:backdrop-blur-none">
         {/* Guests */}
-        <Popover>
+        <Popover> 
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="flex h-[60px] flex-1 items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-[#4e4e4d] md:h-[72px] md:px-5"
+              className="flex h-[70px] flex-1 items-center gap-3 px-4 py-2 text-left transition-colors md:h-[72px] md:px-5"
             >
               <img src={PeopleSrc} alt="" className="h-4 w-4 flex-shrink-0" style={{ filter: "brightness(0) invert(1)" }} />
               <div className="min-w-0 flex-1">
                 <div className="monroe-regular text-[12px] uppercase text-white/60 md:text-[14px] md:text-white/70">
                   Guests        
                 </div>
-                <div className="monroe-regular mt-0.5 truncate text-[12px] leading-none text-white md:text-sm md:leading-normal">
+                <div className="monroe-regular mt-0.5 truncate text-[12px] text-white md:text-sm leading-normal">
                   {guestLabel ?? (
                     <span className="text-white">Number of Guests</span>
                   )}
@@ -218,17 +219,20 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
           </PopoverContent>
         </Popover>
 
-        {/* Divider */}
-        <div className="mx-4 h-px flex-shrink-0 bg-white/20 md:mx-0 md:my-4 md:h-auto md:w-px" />
+        {/* Divider — desktop only (vertical between Guests & Arrival) */}
+        <div
+          aria-hidden
+          className="hidden w-px flex-shrink-0 bg-white/20 md:my-4 md:block md:self-stretch"
+        />
 
         {/* Arrival & Departure */}
         <Popover>
           <PopoverTrigger asChild>
-            <button
+            <button 
               type="button"
-              className="flex h-[60px] flex-1 items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-[#4e4e4d] md:h-[72px] md:px-5 md:py-5"
+              className="flex h-[70px] flex-1 items-center gap-3 px-4 py-2 text-left transition-colors md:h-[72px] md:px-5 md:py-5"
             >
-              <CalendarDays className="h-4 w-4 flex-shrink-0 text-white" />
+              <img src={CalenderSrc} alt="" className="h-4 w-4 flex-shrink-0" style={{ filter: "brightness(0) invert(1)" }} />
               <div className="min-w-0 flex-1">
                 <div className="monroe-regular text-[12px] uppercase text-white/60 md:text-[14px] md:text-white/70">
                   Arrival &amp; Departure

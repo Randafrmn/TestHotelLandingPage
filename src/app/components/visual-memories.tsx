@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { CSSProperties } from "react";
 import { Container } from "./shared/Container";
 import { ModalMemories } from "./modal-memories";
 import Memories1Src from "@/assets/images/memories1.svg";
@@ -10,15 +11,17 @@ import HeroImage2Src from "@/assets/images/HeroImage2.svg";
 import GalerySrc from "@/assets/icons/Galery.svg";
 
 /*
-  Grid layout (3 cols × 3 rows):
+  Desktop: 3 cols × 3 rows mosaic (md+)
 
   Col1        Col2            Col3
-  [mem1]      [ImgDetail1↕]   [HeroImg2]       row 1
-  [mem2]      [ImgDetail1↕]   [mem4+SeeAll↕]   row 2
-  [mem3↔↔↔↔↔↔↔↔↔↔↔]          [mem4+SeeAll↕]   row 3
+  [mem1]      [About2↕]       [HeroImg2]       row 1
+  [mem2]      [About2↕]       [mem4+SeeAll↕]   row 2
+  [mem3↔↔↔]                   [mem4+SeeAll↕]   row 3
+
+  Mobile: 2-column top (mem1 + mem2 stacked left, tall About2 right) + full-width mem3 + See All overlay
 */
 
-const GRID_H = 700; /* total height of the photo mosaic in px */
+const GRID_H = 700;
 const GAP = 10;
 
 export function VisualMemories() {
@@ -27,16 +30,14 @@ export function VisualMemories() {
   return (
     <section id="visual-memories" className="bg-white py-20">
       <Container>
-
-        {/* ── Header (left-aligned) ── */}
-        <div className="mb-10">
-          <p className="monroe-regular mb-3 text-[16px] text-[rgba(50,50,50,1)]">
+        {/* ── Header (centered mobile, left desktop) ── */}
+        <div className="mb-10 text-center md:mb-10 md:text-left">
+          <p className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
             — Visual Memories —
           </p>
           <h2
-            className="manrope-regular mb-4"
+            className="manrope-regular mb-4 text-[24px] md:text-[40px]"
             style={{
-              fontSize: "40px",
               fontWeight: 400,
               lineHeight: "140%",
               letterSpacing: "0%",
@@ -45,45 +46,91 @@ export function VisualMemories() {
           >
             A Glimpse of Paradise
           </h2>
-          <p className="manrope-regular text-muted-foreground" style={{ fontSize: "16px" }}>
+          <p
+            className="manrope-regular mx-auto max-w-[320px] text-muted-foreground md:mx-0 md:max-w-none"
+            style={{ fontSize: "16px" }}
+          >
             From golden sunrises on the terrace to cozy evenings by the fireplace.
           </p>
         </div>
 
-        {/* ── Mosaic grid ── */}
+        {/* ── Mobile gallery ── */}
+        <div className="flex flex-col md:hidden" style={{ gap: GAP }}>
+          <div
+            className="grid w-full grid-cols-2 grid-rows-2"
+            style={{ gap: GAP }}
+          >
+            <div
+              className="aspect-square min-h-0 w-full overflow-hidden rounded-[1px]"
+              style={{ gridColumn: 1, gridRow: 1, ...imgStyle(Memories1Src) }}
+            />
+            <div
+              className="row-span-2 min-h-0 w-full overflow-hidden rounded-[1px]"
+              style={{ gridColumn: 2, gridRow: "1 / 3", ...imgStyle(About2Src) }}
+            />
+            <div
+              className="aspect-square min-h-0 w-full overflow-hidden rounded-[1px]"
+              style={{ gridColumn: 1, gridRow: 2, ...imgStyle(Memories2Src) }}
+            />
+          </div>
+
+          <button
+            type="button"
+            className="relative w-full overflow-hidden rounded-[1px] text-left outline-none"
+            style={{ aspectRatio: "16 / 9", minHeight: "160px" }}
+            onClick={() => setGalleryOpen(true)}
+          >
+            <div className="absolute inset-0" style={{ ...imgStyle(Memories3Src) }} />
+            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src={GalerySrc}
+                  alt=""
+                  style={{ width: "22px", height: "auto", filter: "brightness(0) invert(1)" }}
+                />
+                <span
+                  className="manrope-regular"
+                  style={{
+                    fontSize: "14px",
+                    color: "rgba(255,255,255,1)",
+                    borderBottom: "1px solid rgba(255,255,255,0.7)",
+                    paddingBottom: "1px",
+                  }}
+                >
+                  See All Photos
+                </span>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        {/* ── Desktop mosaic ── */}
         <div
+          className="hidden md:grid"
           style={{
-            display: "grid",
             gridTemplateColumns: "1fr 1fr 1fr",
-            gridTemplateRows: `1fr 1fr 1fr`,
+            gridTemplateRows: "1fr 1fr 1fr",
             gap: `${GAP}px`,
             height: `${GRID_H}px`,
           }}
         >
-          {/* 1 — memories1 · col1/row1 */}
           <div style={{ gridColumn: "1", gridRow: "1", borderRadius: "1px", ...imgStyle(Memories1Src) }} />
 
-          {/* 2 — ImageDetail1 · col2/rows1–2 (tall) */}
           <div style={{ gridColumn: "2", gridRow: "1 / 3", borderRadius: "1px", ...imgStyle(About2Src) }} />
 
-          {/* 3 — HeroImage2 · col3/row1 */}
           <div style={{ gridColumn: "3", gridRow: "1", borderRadius: "1px", ...imgStyle(HeroImage2Src) }} />
 
-          {/* 4 — memories2 · col1/row2 */}
           <div style={{ gridColumn: "1", gridRow: "2", borderRadius: "1px", ...imgStyle(Memories2Src) }} />
 
-          {/* 6 — memories3 · cols1–2/row3 (wide) */}
           <div style={{ gridColumn: "1 / 3", gridRow: "3", borderRadius: "1px", ...imgStyle(Memories3Src) }} />
 
-          {/* 7 — memories4 · col3/rows2–3 (tall) + See All Photos */}
           <div
-            className="relative overflow-hidden"
-            style={{ gridColumn: "3", gridRow: "2 / 4", borderRadius: "1px", cursor: "pointer" }}
+            className="relative cursor-pointer overflow-hidden"
+            style={{ gridColumn: "3", gridRow: "2 / 4", borderRadius: "1px" }}
             onClick={() => setGalleryOpen(true)}
           >
-            {/* dimmed background */}
             <div className="absolute inset-0" style={{ ...imgStyle(Memories4Src), filter: "brightness(0.5)" }} />
-            {/* overlay content */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex items-center gap-2.5">
                 <img
@@ -105,7 +152,6 @@ export function VisualMemories() {
               </div>
             </div>
           </div>
-
         </div>
       </Container>
 
@@ -114,8 +160,7 @@ export function VisualMemories() {
   );
 }
 
-/* helper: full-size background image div */
-function imgStyle(src: string): React.CSSProperties {
+function imgStyle(src: string): CSSProperties {
   return {
     width: "100%",
     height: "100%",

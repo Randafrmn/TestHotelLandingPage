@@ -1,85 +1,84 @@
-import { useCallback, useEffect, useState } from "react";
-import useEmblaCarousel from "embla-carousel-react";
+  import { useCallback, useEffect, useState } from "react";
+  import useEmblaCarousel from "embla-carousel-react";
 import { Container } from "./shared/Container";
 import { SliderNavButtons } from "./shared/SliderNavButtons";
-import Amenities1Src from "@/assets/icons/Amenities1.svg";
-import Amenities2Src from "@/assets/icons/Amenities2.svg";
-import Amenities3Src from "@/assets/icons/Amenities3.svg";
-import Amenities4Src from "@/assets/icons/Amenities4.svg";
-import Amenities5Src from "@/assets/icons/Amenities5.svg";
-import Amenities6Src from "@/assets/icons/Amenities6.svg";
+  import Amenities1Src from "@/assets/icons/Amenities1.svg";
+  import Amenities2Src from "@/assets/icons/Amenities2.svg";
+  import Amenities3Src from "@/assets/icons/Amenities3.svg";
+  import Amenities4Src from "@/assets/icons/Amenities4.svg";
+  import Amenities5Src from "@/assets/icons/Amenities5.svg";
+  import Amenities6Src from "@/assets/icons/Amenities6.svg";
 
-/* ─── Data ─────────────────────────────────────────────────────── */
+  /* ─── Data ─────────────────────────────────────────────────────── */
 
-const ITEMS = [
-  {
-    icon: Amenities1Src,
-    title: "Sky Infinity Pool",
-    desc: "Experience the sensation of swimming in our 25-meter heated pool that appears to float directly into the rugged Dolomite peaks.",
-  },
-  {
-    icon: Amenities2Src,
-    title: "Forest-to-Table Dining",
-    desc: "Indulge in 5-course gourmet dinners featuring organic ingredients sourced daily from our own gardens and local Alpine farmers.",
-  },
-  {
-    icon: Amenities3Src,
-    title: "Vitalis Panoramic Spa",
-    desc: "Recharge in our panoramic saunas and enjoy authentic herbal treatments inspired by ancient Alpine healing traditions.",
-  },
-  {
-    icon: Amenities4Src,
-    title: "Ski-In / Ski-Out Access",
-    desc: "Enjoy seamless access to the Dolomiti Superski slopes directly from the hotel's ski room—no shuttles, no waiting.",
-  },
-  {
-    icon: Amenities5Src,
-    title: "E-Bike & Hiking Hub",
-    desc: "Explore the mountains with ease using our premium fleet of e-bikes and professional hiking gear available exclusively for guests.",
-  },
-  {
-    icon: Amenities6Src,
-    title: "Mindful Yoga Studio",
-    desc: "Find your inner peace in our glass-walled studio overlooking the pine forest, offering daily guided meditation and yoga sessions.",
-  },
-];
+  const ITEMS = [
+    {
+      icon: Amenities1Src,
+      title: "Sky Infinity Pool",
+      desc: "Experience the sensation of swimming in our 25-meter heated pool that appears to float directly into the rugged Dolomite peaks.",
+    },
+    {
+      icon: Amenities2Src,
+      title: "Forest-to-Table Dining",
+      desc: "Indulge in 5-course gourmet dinners featuring organic ingredients sourced daily from our own gardens and local Alpine farmers.",
+    },
+    {
+      icon: Amenities3Src,
+      title: "Vitalis Panoramic Spa",
+      desc: "Recharge in our panoramic saunas and enjoy authentic herbal treatments inspired by ancient Alpine healing traditions.",
+    },
+    {
+      icon: Amenities4Src,
+      title: "Ski-In / Ski-Out Access",
+      desc: "Enjoy seamless access to the Dolomiti Superski slopes directly from the hotel's ski room—no shuttles, no waiting.",
+    },
+    {
+      icon: Amenities5Src,
+      title: "E-Bike & Hiking Hub",
+      desc: "Explore the mountains with ease using our premium fleet of e-bikes and professional hiking gear available exclusively for guests.",
+    },
+    {
+      icon: Amenities6Src,
+      title: "Mindful Yoga Studio",
+      desc: "Find your inner peace in our glass-walled studio overlooking the pine forest, offering daily guided meditation and yoga sessions.",
+    },
+  ];
 
-/* ─── Component ─────────────────────────────────────────────────── */
+  /* ─── Component ─────────────────────────────────────────────────── */
 
-export function Amenities() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: false,
-    align: "start",
-    slidesToScroll: 1,
-    duration: 30,
-  });
+  export function Amenities() {
+    const [emblaRef, emblaApi] = useEmblaCarousel({
+      loop: false,
+      align: "start",
+      slidesToScroll: 1,
+      duration: 25,
+    });
 
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-  const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(true);
+    const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+    const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+    const [canPrev, setCanPrev] = useState(false);
+    const [canNext, setCanNext] = useState(true);
 
-  useEffect(() => {
-    if (!emblaApi) return;
-    const update = () => {
-      setCanPrev(emblaApi.canScrollPrev());
-      setCanNext(emblaApi.canScrollNext());
-    };
-    update();
-    emblaApi.on("select", update);
-    emblaApi.on("reInit", update);
-    return () => {
-      emblaApi.off("select", update);
-      emblaApi.off("reInit", update);
-    };
-  }, [emblaApi]);
+    useEffect(() => {
+      if (!emblaApi) return;
+      const update = () => {
+        setCanPrev(emblaApi.canScrollPrev());
+        setCanNext(emblaApi.canScrollNext());
+      };
+      update();
+      emblaApi.on("select", update);
+      emblaApi.on("reInit", update);
+      return () => {
+        emblaApi.off("select", update);
+        emblaApi.off("reInit", update);
+      };
+    }, [emblaApi]);
 
   return (
     <section id="amenities" className="bg-white py-20">
-      <Container>
-
-        {/* ── Header ── */}
-        <div className="mb-10 text-center md:mb-12">
+      {/* ── Header ── */}
+      <Container className="mb-10 text-center md:mb-12">
+        <div className="mx-auto w-full max-w-[350px] md:max-w-none">
           <p className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
             — Amenities —
           </p>
@@ -96,9 +95,11 @@ export function Amenities() {
             Everything you'd hope for, and more.
           </h2>
         </div>
+      </Container>
 
-        {/* ── Grid ── */}
-        <div className="hidden grid-cols-3 gap-5 md:grid">
+      {/* ── Desktop grid ── */}
+      <Container className="hidden md:block">
+        <div className="grid grid-cols-3 gap-5">
           {ITEMS.map((item) => (
             <div
               key={item.title}
@@ -109,7 +110,6 @@ export function Amenities() {
                 padding: "28px",
               }}
             >
-              {/* Icon box */}
               <div
                 className="mb-5 flex items-center justify-center"
                 style={{
@@ -132,7 +132,6 @@ export function Amenities() {
                 />
               </div>
 
-              {/* Title */}
               <h3
                 className="manrope-regular mb-3"
                 style={{ fontSize: "18px", fontWeight: 500, color: "rgba(50, 50, 50, 1)" }}
@@ -140,7 +139,6 @@ export function Amenities() {
                 {item.title}
               </h3>
 
-              {/* Description */}
               <p
                 className="manrope-regular"
                 style={{ fontSize: "13px", lineHeight: "160%", color: "rgba(50, 50, 50, 0.7)" }}
@@ -150,23 +148,24 @@ export function Amenities() {
             </div>
           ))}
         </div>
+      </Container>
 
-        {/* ── Mobile carousel: one card ── */}
-        <div className="md:hidden">
-          <div className="overflow-hidden px-2">
-            <div ref={emblaRef} className="overflow-visible">
-              <div className="flex gap-3 pr-2">
+      {/* ── Mobile carousel ── */}
+      <div className="md:hidden">
+        <div className="mx-auto w-full overflow-hidden px-6">
+          <div ref={emblaRef}>
+            <div className="flex gap-[25px]">
               {ITEMS.map((item) => (
                 <div
                   key={item.title}
-                  className="min-w-0 flex-[0_0_calc(100%-54px)] rounded-[8px]"
+                  className="relative z-10 min-w-0 flex-[0_0_100%] rounded-[8px]"
                   style={{
                     backgroundColor: "rgba(244, 243, 240, 1)",
                     padding: "16px",
                   }}
                 >
                   <div
-                    className="mb-4 flex items-center justify-center"
+                    className="mb-8 flex items-center justify-center"
                     style={{
                       width: "48px",
                       height: "48px",
@@ -179,8 +178,8 @@ export function Amenities() {
                       src={item.icon}
                       alt=""
                       style={{
-                        width: "24px",
-                        height: "24px",
+                        width: "28px",
+                        height: "28px",
                         objectFit: "contain",
                         filter: "brightness(0) invert(67%) sepia(10%) saturate(675%) hue-rotate(358deg) brightness(89%) contrast(89%)",
                       }}
@@ -188,7 +187,7 @@ export function Amenities() {
                   </div>
 
                   <h3
-                    className="manrope-regular mb-2"
+                    className="manrope-regular mb-6"
                     style={{ fontSize: "18px", fontWeight: 500, color: "rgba(50, 50, 50, 1)", lineHeight: "1.25" }}
                   >
                     {item.title}
@@ -202,23 +201,21 @@ export function Amenities() {
                   </p>
                 </div>
               ))}
-              </div>
             </div>
-          </div>
-
-          <div className="mt-6 flex justify-center">
-            <SliderNavButtons
-              onPrev={scrollPrev}
-              onNext={scrollNext}
-              prevDisabled={!canPrev}
-              nextDisabled={!canNext}
-              activeArrowFilter="brightness(0) invert(1)"
-              inactiveArrowFilter="brightness(0) invert(1) brightness(0.596)"
-            />
           </div>
         </div>
 
-      </Container>
+        <div className="mt-6 flex justify-center">
+          <SliderNavButtons
+            onPrev={scrollPrev}
+            onNext={scrollNext}
+            prevDisabled={!canPrev}
+            nextDisabled={!canNext}
+            activeArrowFilter="brightness(0) invert(1)"
+            inactiveArrowFilter="brightness(0) invert(1) brightness(0.596)"
+          />
+        </div>
+      </div>
     </section>
   );
 }
