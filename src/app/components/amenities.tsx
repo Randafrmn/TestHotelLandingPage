@@ -75,14 +75,15 @@ import { SliderNavButtons } from "./shared/SliderNavButtons";
     }, [emblaApi]);
 
   return (
-    <section id="amenities" className="bg-white py-20">
+    <section data-section-animate id="amenities" className="bg-white py-20">
       {/* ── Header ── */}
       <Container className="mb-10 text-center md:mb-12">
-        <div className="mx-auto w-full max-w-[350px] md:max-w-none">
-          <p className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
+        <div className="mx-auto w-full">
+          <p data-reveal className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
             — Amenities —
           </p>
           <h2
+            data-reveal
             className="manrope-regular"
             style={{
               fontSize: "clamp(24px, 3.6vw, 40px)",
@@ -99,7 +100,7 @@ import { SliderNavButtons } from "./shared/SliderNavButtons";
 
       {/* ── Desktop grid ── */}
       <Container className="hidden md:block">
-        <div className="grid grid-cols-3 gap-5">
+        <div data-reveal className="grid grid-cols-3 gap-5">
           {ITEMS.map((item) => (
             <div
               key={item.title}
@@ -151,7 +152,7 @@ import { SliderNavButtons } from "./shared/SliderNavButtons";
       </Container>
 
       {/* ── Mobile carousel ── */}
-      <div className="md:hidden">
+      <div data-reveal className="md:hidden">
         <div className="mx-auto w-full overflow-hidden px-6">
           <div ref={emblaRef}>
             <div className="flex gap-[25px]">

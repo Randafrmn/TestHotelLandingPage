@@ -58,7 +58,7 @@ export function Hero() {
   }, [emblaApi]);
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden">
+    <section data-section-animate className="relative min-h-screen w-full overflow-hidden">
       {/* ── Carousel ── */}
       <div ref={emblaRef} className="absolute inset-0 overflow-hidden">
         <div className="flex h-full touch-pan-y will-change-transform [transform:translate3d(0,0,0)]">
@@ -110,19 +110,22 @@ export function Hero() {
 
           {/* Title */}
           <h1
-            className="manrope-regular mb-4 max-w-2xl text-white sm:mb-6"
+            data-reveal
+            className="manrope-regular mb-4 text-white sm:mb-6"
             style={{ fontSize: "clamp(1rem, 4.8vw, 2rem)", lineHeight: 1.05 }}
           >
             The Silence of the Alps, Redefined.
           </h1>
 
           {/* Booking bar */}
-          <HeroBookingBar
-            dateRange={dateRange}
-            onDateChange={setDateRange}
-            guests={guests}
-            onGuestsChange={setGuests}
-          />
+          <div data-reveal className="w-full max-w-[765px]">
+            <HeroBookingBar
+              dateRange={dateRange}
+              onDateChange={setDateRange}
+              guests={guests}
+              onGuestsChange={setGuests}
+            />
+          </div>
         </Container>
       </div>
     </section>
@@ -174,7 +177,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
         }));
         document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
       }}
-      className="w-full max-w-[765px] overflow-hidden rounded-xl shadow-2xl bg-[#40403F]"
+      className="w-full max-w-[765px] overflow-hidden rounded-lg shadow-2xl bg-[#40403F]"
     >
       {/* Guests + Arrival & Departure joined section */}
       <div className="flex flex-col md:flex-row">

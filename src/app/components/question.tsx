@@ -27,10 +27,11 @@ const FAQS = [
 ];
 
 export function Question() {
-  const [openIdx, setOpenIdx] = useState(0);
+  const [openSet, setOpenSet] = useState<Set<number>>(() => new Set([0]));
 
   return (
     <section
+      data-section-animate
       id="faq"
       className="py-20"
       style={{ backgroundColor: "rgba(244, 243, 240, 1)" }}
@@ -40,6 +41,7 @@ export function Question() {
           {/* ── Title + description + image (vertical; design: image between copy and FAQ) ── */}
           <div className="flex min-w-0 flex-col gap-6 text-center md:flex-1 md:gap-8 md:text-left">
             <h2
+              data-reveal
               className="manrope-regular"
               style={{
                 fontSize: "clamp(24px, 5vw, 40px)",
@@ -52,13 +54,14 @@ export function Question() {
               Frequently Asked Questions
             </h2>
             <p
-              className="manrope-regular mx-auto max-w-[min(100%,420px)] md:mx-0 md:max-w-none"
+              data-reveal
+              className="manrope-regular mx-auto md:mx-0"
               style={{ fontSize: "16px", lineHeight: "150%", color: "rgba(50,50,50,0.7)" }}
             >
               Answers to the most common questions, so you can focus on enjoying
               your time with us.
             </p>
-            <div className="w-full overflow-hidden rounded-[1px] bg-[rgba(50,50,50,0.04)]">
+            <div data-reveal className="w-full overflow-hidden rounded-[1px] bg-[rgba(50,50,50,0.04)]">
               <img
                 src={QnASrc}
                 alt="Hotel interior"
@@ -69,9 +72,9 @@ export function Question() {
           </div>
 
           {/* ── Accordion — stacked cards below image on mobile, right column on desktop ── */}
-          <div className="flex min-w-0 w-full flex-col gap-4 md:flex-1 md:gap-5">
+          <div data-reveal className="flex min-w-0 w-full flex-col gap-4 md:flex-1 md:gap-5">
             {FAQS.map((item, i) => {
-              const isOpen = openIdx === i;
+              const isOpen = openSet.has(i);
               return (
                 <div
                   key={i}
@@ -80,7 +83,14 @@ export function Question() {
                 >
                   <button
                     type="button"
-                    onClick={() => setOpenIdx(isOpen ? -1 : i)}
+                    onClick={() => {
+                      setOpenSet((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(i)) next.delete(i);
+                        else next.add(i);
+                        return next;
+                      });
+                    }}
                     className="manrope-regular flex w-full items-start justify-between gap-4 text-left"
                     style={{
                       padding: "20px 22px",

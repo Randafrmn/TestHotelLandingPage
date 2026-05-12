@@ -28,14 +28,15 @@ export function VisualMemories() {
   const [galleryOpen, setGalleryOpen] = useState(false);
 
   return (
-    <section id="visual-memories" className="bg-white py-20">
+    <section data-section-animate id="visual-memories" className="bg-white py-20">
       <Container>
         {/* ── Header (centered mobile, left desktop) ── */}
         <div className="mb-10 text-center md:mb-10 md:text-left">
-          <p className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
+          <p data-reveal className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
             — Visual Memories —
           </p>
           <h2
+            data-reveal
             className="manrope-regular mb-4 text-[24px] md:text-[40px]"
             style={{
               fontWeight: 400,
@@ -47,7 +48,8 @@ export function VisualMemories() {
             A Glimpse of Paradise
           </h2>
           <p
-            className="manrope-regular mx-auto max-w-[320px] text-muted-foreground md:mx-0 md:max-w-none"
+            data-reveal
+            className="manrope-regular mx-auto text-muted-foreground md:mx-0"
             style={{ fontSize: "16px" }}
           >
             From golden sunrises on the terrace to cozy evenings by the fireplace.
@@ -55,7 +57,7 @@ export function VisualMemories() {
         </div>
 
         {/* ── Mobile gallery ── */}
-        <div className="flex flex-col md:hidden" style={{ gap: GAP }}>
+        <div data-reveal className="flex flex-col md:hidden" style={{ gap: GAP }}>
           <div
             className="grid w-full grid-cols-2 grid-rows-2"
             style={{ gap: GAP }}
@@ -107,6 +109,7 @@ export function VisualMemories() {
 
         {/* ── Desktop mosaic ── */}
         <div
+          data-reveal
           className="hidden md:grid"
           style={{
             gridTemplateColumns: "1fr 1fr 1fr",

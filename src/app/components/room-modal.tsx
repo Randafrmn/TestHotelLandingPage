@@ -33,7 +33,7 @@ type Props = {
   onClose: () => void;
 };
 
-const MODAL_H = 480;
+const MODAL_H = 480; /* desktop minimum height */
 
 export function RoomModal({ room, onClose }: Props) {
   const [modalEmblaRef, modalEmblaApi] = useEmblaCarousel({ loop: true, duration: 30 });
@@ -65,16 +65,16 @@ export function RoomModal({ room, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-4"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 py-8 md:p-4 md:py-10"
       style={{ backgroundColor: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
       onClick={onClose}
     >
       <div
-        className="relative flex w-full overflow-hidden bg-white"
+        className="relative my-auto flex w-full overflow-hidden bg-white"
         style={{
           borderRadius: "12px",
           maxWidth: isMobile ? "350px" : "1060px",
-          height: isMobile ? "calc(100vh - 58px)" : `${MODAL_H}px`,
+          minHeight: isMobile ? undefined : MODAL_H,
           flexDirection: isMobile ? "column" : "row",
           gap: isMobile ? "8px" : "0px",
         }}
@@ -83,14 +83,22 @@ export function RoomModal({ room, onClose }: Props) {
 
         {/* ── Left: Carousel (framed) ── */}
         <div
-          className="relative flex-shrink-0"
+          className="relative flex flex-shrink-0 flex-col"
           style={{
             width: isMobile ? "100%" : "52%",
-            height: isMobile ? "210px" : "100%",
+            minHeight: isMobile ? 210 : MODAL_H,
+            alignSelf: isMobile ? undefined : "stretch",
             padding: isMobile ? "0px" : "16px 8px 16px 16px",
           }}
         >
-          <div className="relative h-full overflow-hidden" style={{ borderRadius: "12px" }}>
+          <div
+            className="relative flex-1 overflow-hidden"
+            style={{
+              borderRadius: "12px",
+              height: isMobile ? "210px" : "100%",
+              minHeight: isMobile ? "210px" : MODAL_H - 32,
+            }}
+          >
             <div ref={modalEmblaRef} style={{ overflow: "hidden", height: "100%" }}>
               <div className="flex" style={{ height: "100%" }}>
                 {room.gallery.map((src, i) => (
@@ -141,21 +149,21 @@ export function RoomModal({ room, onClose }: Props) {
 
         {/* ── Right: Details ── */}
         <div
-          className="flex flex-col"
+          className="flex min-w-0 flex-col"
           style={{
             flex: 1,
-            overflow: "auto",
+            overflow: "visible",
             padding: isMobile ? "10px 12px 12px 12px" : "24px 28px 20px 24px",
           }}
         >
           <h2
             className="manrope-regular"
             style={{
-              fontSize: isMobile ? "18px" : "18px",
-              fontWeight: 500,
+              fontSize: "20px",
+              fontWeight: 400,
               color: "rgba(50,50,50,1)",
               marginBottom: isMobile ? "8px" : "12px",
-              lineHeight: isMobile ? "1.08" : "normal",
+              lineHeight: isMobile ? "1.2" : "1.25",
             }}
           >
             {room.name}
@@ -189,7 +197,7 @@ export function RoomModal({ room, onClose }: Props) {
                     filter: "brightness(0)",
                   }}
                 />
-                <span className="manrope-regular" style={{ fontSize: isMobile ? "14px" : "12px", color: "rgba(50,50,50,0.9)", lineHeight: isMobile ? "1.2" : "normal" }}>
+                <span className="manrope-regular" style={{ fontSize: "16px", fontWeight: 400, color: "rgba(50,50,50,0.9)", lineHeight: "1.35" }}>
                   {label}
                 </span>
               </div>
@@ -199,8 +207,9 @@ export function RoomModal({ room, onClose }: Props) {
           <p
             className="manrope-regular"
             style={{
-              fontSize: isMobile ? "12px" : "11.5px",
-              lineHeight: isMobile ? "160%" : "165%",
+              fontSize: "16px",
+              fontWeight: 400,
+              lineHeight: "160%",
               color: "rgba(50,50,50,1)",
               marginBottom: isMobile ? "8px" : "12px",
               flexShrink: 0,
@@ -210,14 +219,14 @@ export function RoomModal({ room, onClose }: Props) {
           </p>
 
           <div style={{ marginBottom: isMobile ? "8px" : "10px", flexShrink: 0 }}>
-            <p className="manrope-regular" style={{ fontSize: isMobile ? "12px" : "11.5px", fontWeight: 500, color: "rgba(50,50,50,1)", marginBottom: "6px" }}>
+            <p className="manrope-regular" style={{ fontSize: "16px", fontWeight: 500, color: "rgba(50,50,50,1)", marginBottom: "6px" }}>
               Amenities:
             </p>
             <div className={isMobile ? "flex flex-col items-start gap-2.5" : "flex items-center gap-4"}>
               {room.amenities.map(({ icon, label }) => (
                 <div key={label} className="flex items-center gap-1.5">
                   <img src={icon} alt="" style={{ width: isMobile ? "14px" : "18px", height: isMobile ? "10px" : "13px", objectFit: "contain", flexShrink: 0, filter: "brightness(0) invert(67%) sepia(10%) saturate(675%) hue-rotate(358deg) brightness(89%) contrast(89%)" }} />
-                  <span className="manrope-regular" style={{ fontSize: isMobile ? "12px" : "11.5px", color: "rgba(50,50,50,1)" }}>
+                  <span className="manrope-regular" style={{ fontSize: "16px", fontWeight: 400, color: "rgba(50,50,50,1)" }}>
                     {label}
                   </span>
                 </div>
@@ -226,7 +235,7 @@ export function RoomModal({ room, onClose }: Props) {
           </div>
 
           <div style={{ flexShrink: 0 }}>
-            <p className="manrope-regular" style={{ fontSize: isMobile ? "12px" : "11.5px", fontWeight: 500, color: "rgba(50,50,50,1)", marginBottom: "6px" }}>
+            <p className="manrope-regular" style={{ fontSize: "16px", fontWeight: 500, color: "rgba(50,50,50,1)", marginBottom: "6px" }}>
               Included services:
             </p>
             <ul
@@ -243,7 +252,7 @@ export function RoomModal({ room, onClose }: Props) {
                     style={{
                       width: isMobile ? "13px" : "13px",
                       height: isMobile ? "13px" : "13px",
-                      marginTop: isMobile ? 0 : "2px",
+                      marginTop: isMobile ? 0 : "3px",
                       backgroundColor: "rgba(164,151,129,1)",
                     }}
                   >
@@ -260,8 +269,9 @@ export function RoomModal({ room, onClose }: Props) {
                   <span
                     className="manrope-regular min-w-0 flex-1"
                     style={{
-                      fontSize: isMobile ? "11px" : "11px",
-                      lineHeight: isMobile ? "150%" : "155%",
+                      fontSize: "16px",
+                      fontWeight: 400,
+                      lineHeight: "150%",
                       color: "rgba(50,50,50,1)",
                     }}
                   >
@@ -272,9 +282,7 @@ export function RoomModal({ room, onClose }: Props) {
             </ul>
           </div>
 
-          <div style={{ flex: 1, minHeight: isMobile ? "8px" : "0" }} />
-
-          <div className="flex gap-3">
+          <div className="mt-auto flex gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}

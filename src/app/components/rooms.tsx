@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Container } from "./shared/Container";
 import { SliderNavButtons } from "./shared/SliderNavButtons";
@@ -113,20 +113,36 @@ const ROOMS: Room[] = [
 
 export function Rooms() {
   const [activeRoom, setActiveRoom] = useState<Room | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches,
+  );
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: false,
-    align: "start",
-    slidesToScroll: 1,
-    duration: 25,
-  });
+  const emblaOptions = useMemo(
+    () =>
+      ({
+        loop: true,
+        align: isMobile ? "start" : "end",
+        slidesToScroll: 1,
+        duration: 25,
+      }) as const,
+    [isMobile],
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions);
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -143,31 +159,51 @@ export function Rooms() {
     };
   }, [emblaApi]);
 
+  /* Desktop: viewport “starts from the right” (last suites in view); mobile: first slide */
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
+    if (!emblaApi) return;
+    const place = () => {
+      const idx = isMobile ? 0 : Math.max(0, ROOMS.length - 1);
+      emblaApi.scrollTo(idx, true);
+    };
+    emblaApi.on("init", place);
+    const t = window.setTimeout(place, 0);
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(place);
+    });
+    return () => {
+      emblaApi.off("init", place);
+      window.clearTimeout(t);
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, [emblaApi, isMobile]);
 
   return (
-    <section id="rooms" style={{ backgroundColor: "rgba(244, 243, 240, 1)" }} className="py-20">
+    <section
+      data-section-animate
+      id="rooms"
+      style={{ backgroundColor: "rgba(244, 243, 240, 1)" }}
+      className="py-20"
+    >
 
       {/* ── Header ── */}
       <Container className="mb-10 text-center md:mb-12">
-        <p className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
+        <p data-reveal className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
           — Your Private Sanctuary —
         </p>
         <h2
+          data-reveal
           className="manrope-regular mb-4 text-[24px] md:text-[40px]"
           style={{ fontWeight: 400, lineHeight: "140%", letterSpacing: "0%", color: "rgba(50, 50, 50, 1)" }}
         >
           Designed for Deep Rest
         </h2>
         <p
+          data-reveal
           className="manrope-regular text-muted-foreground"
-          style={{ fontSize: "16px", maxWidth: isMobile ? "320px" : "none", margin: "0 auto" }}
+          style={{ fontSize: "16px", margin: "0 auto" }}
         >
           Explore our selection of light-flooded suites, each featuring a private panoramic
           terrace and the soothing scent of natural pine wood.
@@ -175,23 +211,22 @@ export function Rooms() {
       </Container>
 
       {/* ── Carousel ── */}
-      <div ref={emblaRef} className={isMobile ? "overflow-hidden px-6" : "overflow-hidden"}>
+      <div ref={emblaRef} className="overflow-hidden px-6">
         <div
           className="flex"
           style={{
-            paddingLeft: isMobile ? "0px" : "max(24px, calc((100vw - 1152px) / 2 + 24px))",
-            paddingRight: isMobile ? "0px" : "max(24px, calc((100vw - 1152px) / 2 + 24px))",
             gap: isMobile ? "25px" : "20px",
           }}
         >
           {ROOMS.map((room, i) => (
             <div
               key={i}
+              data-reveal
               className="flex-shrink-0 overflow-hidden bg-white"
               style={{
                 width: isMobile
                   ? "100%"
-                  : "calc((min(100vw, 1152px) - 48px - 48px) / 3)",
+                  : "calc((100vw - 48px - 40px) / 3)",
                 borderRadius: "8px",
               }}
             >

@@ -1,3 +1,4 @@
+import { useSectionEntranceAnimations } from "./hooks/useSectionEntranceAnimations";
 import { Hero } from "./components/hero";
 import { About } from "./components/about";
 import { Rooms } from "./components/rooms";
@@ -10,6 +11,8 @@ import { Navbar } from "./components/navbar";
 import { Toaster } from "./components/ui/sonner";
 
 export default function App() {
+  useSectionEntranceAnimations();
+
   return (
     <div className="min-h-screen w-full bg-background">
       <Navbar transparent />

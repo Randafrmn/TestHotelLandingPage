@@ -41,6 +41,7 @@ const contactBoxStyle = {
 export function Footer() {
   return (
     <footer
+      data-section-animate
       id="contact"
       className="w-full"
       style={{ backgroundColor: "rgba(50, 50, 50, 1)" }}
@@ -54,13 +55,13 @@ export function Footer() {
         */}
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,2fr)] lg:gap-x-12 lg:gap-y-10">
           {/* Brand + address — centered on mobile, left on desktop */}
-          <div className="col-span-2 flex flex-col items-center text-center lg:col-span-1 lg:items-start lg:pr-4 lg:text-left">
+          <div data-reveal className="col-span-2 flex flex-col items-center text-center lg:col-span-1 lg:items-start lg:pr-4 lg:text-left">
             <a href="#" className="flex items-center justify-center gap-3 lg:justify-start" aria-label="Home">
               <img src={logomarkSrc} alt="" width={50} height={40} className="block shrink-0" />
               <img src={logotypeSrc} alt="Logoipsum" width={163} height={33} className="block h-[33px] w-auto max-w-full" />
             </a>
             <p
-              className="manrope-regular mt-4 max-w-md text-[14px] leading-[1.55] lg:mt-6"
+              className="manrope-regular mt-4 text-[14px] leading-[1.55] lg:mt-6"
               style={{ color: "rgba(255, 255, 255, 0.8)" }}
             >
               San Valentino,
@@ -70,7 +71,7 @@ export function Footer() {
           </div>
 
           {/* Links */}
-          <div className="min-w-0">
+          <div data-reveal className="min-w-0">
             <h3 className={headingClass}>Links</h3>
             <nav className="flex flex-col gap-[14px]">
               <a href="#" className={linkClass}>
@@ -89,7 +90,7 @@ export function Footer() {
           </div>
 
           {/* Legal (label per mockup) */}
-          <div className="min-w-0">
+          <div data-reveal className="min-w-0">
             <h3 className={headingClass}>Legal</h3>
             <nav className="flex flex-col gap-[14px]">
               <a href="#" className={linkClass}>
@@ -108,7 +109,7 @@ export function Footer() {
           </div>
 
           {/* Contact + social — full width row on mobile */}
-          <div className="col-span-2 min-w-0 lg:col-span-1">
+          <div data-reveal className="col-span-2 min-w-0 lg:col-span-1">
             <h3 className={headingClass}>Contact</h3>
 
             <div className={`${contactRow} mb-3`} style={contactBoxStyle}>
@@ -164,6 +165,7 @@ export function Footer() {
 
         {/* Bottom: divider + copyright + attribution (left stack on mobile) */}
         <div
+          data-reveal
           className="mt-10 border-t pt-6 sm:mt-12 sm:pt-8"
           style={{ borderColor: "rgba(255, 255, 255, 0.15)" }}
         >
