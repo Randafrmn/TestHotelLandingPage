@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Container } from "./shared/Container";
 import AboutImage1 from "@/assets/images/HeroImage1.svg";
 import AboutImage2 from "@/assets/images/HeroImage2.svg";
@@ -15,14 +15,30 @@ const GAP_PX = 16;    // px gap between slides
 const PEEK_PX = 52;   // px of previous slide visible on left
 
 export function About() {
+  const slidesWithClones = SLIDES;
   const [index, setIndex] = useState(1);
   const [animating, setAnimating] = useState(false);
+  const [viewportW, setViewportW] = useState(390);
   const dragStart = useRef<number | null>(null);
   const DRAG_THRESHOLD = 50; // px needed to trigger slide change
+  const isMobile = viewportW < 768;
 
-  // translateX so that SLIDES[index] aligns after the peek gap
-  const offsetVw = -(index * SLIDE_W);
-  const offsetPx = -(index * GAP_PX) + PEEK_PX + GAP_PX;
+  useEffect(() => {
+    const update = () => setViewportW(window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const slideW = isMobile ? 84 : SLIDE_W;
+  const gapPx = isMobile ? 8 : GAP_PX;
+  const peekPx = isMobile
+    ? Math.max((viewportW * ((100 - slideW) / 100)) / 2, 0)
+    : PEEK_PX;
+
+  // translateX so that current slide aligns after the peek gap
+  const offsetVw = -(index * slideW);
+  const offsetPx = -(index * gapPx) + peekPx + gapPx;
 
   const go = (dir: 1 | -1) => {
     if (animating) return;
@@ -49,41 +65,32 @@ export function About() {
   };
 
   return (
-    <section className="overflow-hidden bg-white py-16">
+    <section className="overflow-hidden bg-white py-14 md:py-16">
 
       {/* ── Header row ── */}
-      <Container className="mb-10">
-        <div className="flex items-end justify-between gap-2">
-          <div className="max-w-4xl">
-            <p className="monroe-regular mb-3 text-[16px] text-[rgba(50, 50, 50, 1)]">
+      <Container className="mb-8 md:mb-10">
+        <div className="flex flex-col items-center gap-6 md:flex-row md:items-end md:justify-between md:gap-2">
+          <div className="max-w-4xl text-center md:text-left">
+            <p className="monroe-regular mb-3 text-[14px] text-[rgba(50, 50, 50, 1)] md:text-[16px]">
               — Our Heritage — 
             </p>
             <h2
-              className="manrope-regular mb-4"
+              className="manrope-regular mb-4 text-[24px] leading-[1.3] text-[rgba(50,50,50,1)] md:text-[40px] md:leading-[1.4]"
               style={{
-                fontSize: "40px",
                 fontWeight: 400,
-                lineHeight: "140%",
                 letterSpacing: "0%",
-                color: "rgba(50, 50, 50, 1)",
               }}
             >
               Nature, Design, and Soul
             </h2>
-            <p className="manrope-regular text-muted-foreground" style={{ fontSize: "16px"}}>
+            <p
+              className="manrope-regular text-center text-muted-foreground md:text-left"
+              style={{ fontSize: "16px", maxWidth: "720px", margin: isMobile ? "0 auto" : "0" }}
+            >
             Born from a passion for architecture and deep respect for the Alpine landscape, L’Aura is more than a hotel—it’s a private retreat where every window frames a masterpiece of nature.
             </p>
           </div>
 
-          {/* Arrows */}
-          <SliderNavButtons
-            onPrev={() => go(-1)}
-            onNext={() => go(1)}
-            prevDisabled={index === 0}
-            nextDisabled={index === SLIDES.length - 1}
-            activeArrowFilter="brightness(0) invert(1)"
-            inactiveArrowFilter="brightness(0) invert(1) brightness(0.596)"
-          />
         </div>
       </Container>
 
@@ -97,18 +104,23 @@ export function About() {
         <div
           className="flex"
           style={{
-            gap: `${GAP_PX}px`,
+            gap: `${gapPx}px`,
             transform: `translateX(calc(${offsetVw}vw + ${offsetPx}px))`,
             transition: "transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
             willChange: "transform",
           }}
           onTransitionEnd={handleTransitionEnd}
         >
-          {SLIDES.map((img, i) => (
+          {slidesWithClones.map((img, i) => (
             <div
               key={i}
-              className="h-[460px] flex-shrink-0 overflow-hidden"
-              style={{ width: `${SLIDE_W}vw` }}
+              className="flex-shrink-0 overflow-hidden"
+              style={{
+                width: `${slideW}vw`,
+                ...(isMobile
+                  ? { aspectRatio: "1 / 1" as const }
+                  : { height: "460px" }),
+              }}
             >
               <img
                 src={img.src}
@@ -120,6 +132,19 @@ export function About() {
           ))}
         </div>
       </div>
+
+      {/* Arrows below carousel */}
+      <Container className="mt-6 flex justify-center">
+        <SliderNavButtons
+          onPrev={() => go(-1)}
+          onNext={() => go(1)}
+          prevDisabled={index === 0}
+          nextDisabled={false}
+          prevInactive
+          activeArrowFilter="brightness(0) invert(1)"
+          inactiveArrowFilter="brightness(0) invert(1) brightness(0.596)"
+        />
+      </Container>
 
     </section>
   );

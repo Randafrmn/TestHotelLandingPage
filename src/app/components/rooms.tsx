@@ -113,12 +113,13 @@ const ROOMS: Room[] = [
 
 export function Rooms() {
   const [activeRoom, setActiveRoom] = useState<Room | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: "start",
     slidesToScroll: 1,
-    duration: 30,
+    duration: 25,
   });
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
@@ -142,41 +143,57 @@ export function Rooms() {
     };
   }, [emblaApi]);
 
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   return (
     <section id="rooms" style={{ backgroundColor: "rgba(244, 243, 240, 1)" }} className="py-20">
 
       {/* ── Header ── */}
-      <Container className="mb-12 text-center">
-        <p className="monroe-regular mb-3 text-[16px] text-[rgba(50,50,50,1)]">
+      <Container className="mb-10 text-center md:mb-12">
+        <p className="monroe-regular mb-3 text-[14px] text-[rgba(50,50,50,1)] md:text-[16px]">
           — Your Private Sanctuary —
         </p>
         <h2
-          className="manrope-regular mb-4"
-          style={{ fontSize: "40px", fontWeight: 400, lineHeight: "140%", letterSpacing: "0%", color: "rgba(50, 50, 50, 1)" }}
+          className="manrope-regular mb-4 text-[24px] md:text-[40px]"
+          style={{ fontWeight: 400, lineHeight: "140%", letterSpacing: "0%", color: "rgba(50, 50, 50, 1)" }}
         >
           Designed for Deep Rest
         </h2>
-        <p className="manrope-regular text-muted-foreground" style={{ fontSize: "16px" }}>
+        <p
+          className="manrope-regular text-muted-foreground"
+          style={{ fontSize: "16px", maxWidth: isMobile ? "320px" : "none", margin: "0 auto" }}
+        >
           Explore our selection of light-flooded suites, each featuring a private panoramic
           terrace and the soothing scent of natural pine wood.
         </p>
       </Container>
 
       {/* ── Carousel ── */}
-      <div ref={emblaRef} className="overflow-hidden">
+      <div ref={emblaRef} className={isMobile ? "overflow-hidden px-6" : "overflow-hidden"}>
         <div
           className="flex"
           style={{
-            paddingLeft: "max(24px, calc((100vw - 1152px) / 2 + 24px))",
-            paddingRight: "max(24px, calc((100vw - 1152px) / 2 + 24px))",
-            gap: "20px",
+            paddingLeft: isMobile ? "0px" : "max(24px, calc((100vw - 1152px) / 2 + 24px))",
+            paddingRight: isMobile ? "0px" : "max(24px, calc((100vw - 1152px) / 2 + 24px))",
+            gap: isMobile ? "25px" : "20px",
           }}
         >
           {ROOMS.map((room, i) => (
             <div
               key={i}
               className="flex-shrink-0 overflow-hidden bg-white"
-              style={{ width: "calc((min(100vw, 1152px) - 48px - 48px) / 3)", borderRadius: "8px" }}
+              style={{
+                width: isMobile
+                  ? "100%"
+                  : "calc((min(100vw, 1152px) - 48px - 48px) / 3)",
+                borderRadius: "8px",
+              }}
             >
               <div className="relative">
                 <div

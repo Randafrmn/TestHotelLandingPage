@@ -71,26 +71,16 @@ export function Navbar({ transparent = false }: NavbarProps) {
         {/* CTA */}
         <a
           href="#reserve"
-          className="manrope-regular hidden items-center rounded-sm px-5 py-2 text-sm leading-[1.5] tracking-[0.05em] uppercase transition-opacity hover:opacity-80 md:flex"
+          className="manrope-regular inline-flex items-center rounded-lg px-4 py-2 text-[12px] leading-[1.5] tracking-[0.05em] uppercase transition-opacity hover:opacity-80 md:rounded-sm md:px-5 md:text-sm"
           style={{
             backgroundColor: isScrolled
               ? "rgba(164, 151, 129, 0.15)"
               : "rgba(0, 0, 0, 0.15)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
           }}
         >
           Book Now
         </a>
-
-        {/* Mobile hamburger */}
-        <button
-          type="button"
-          aria-label="Open menu"
-          className="flex flex-col gap-1.5 md:hidden"
-        >
-          <span className="block h-px w-6 bg-current" />
-          <span className="block h-px w-6 bg-current" />
-          <span className="block h-px w-4 bg-current" />
-        </button>
       </Container>
     </nav>
   );

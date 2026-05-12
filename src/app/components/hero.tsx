@@ -25,7 +25,14 @@ const SLIDES = [
 /* ─── Hero ──────────────────────────────────────────────────────── */
 
 export function Hero() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, duration: 30 });
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    duration: 26,
+    skipSnaps: false,
+    dragFree: false,
+    containScroll: "trimSnaps",
+    slidesToScroll: 1,
+  });
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [guests, setGuests] = useState<Guests | null>(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -53,13 +60,19 @@ export function Hero() {
     <section className="relative min-h-screen w-full overflow-hidden">
       {/* ── Carousel ── */}
       <div ref={emblaRef} className="absolute inset-0 overflow-hidden">
-        <div className="flex h-full touch-pan-y will-change-transform">
+        <div className="flex h-full touch-pan-y will-change-transform [transform:translate3d(0,0,0)]">
           {SLIDES.map((slide, i) => (
-            <div key={i} className="relative h-full min-w-full flex-[0_0_100%] [backface-visibility:hidden]">
+            <div
+              key={i}
+              className="relative h-full min-w-full flex-[0_0_100%] [backface-visibility:hidden] [transform:translate3d(0,0,0)] [will-change:transform]"
+            >
               <img
                 src={slide.src}
                 alt={slide.alt}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover [transform:translateZ(0)] [will-change:transform]"
+                loading="eager"
+                decoding="sync"
+                fetchPriority={i === 0 ? "high" : "auto"}
                 draggable={false}
               />
             </div>
@@ -91,13 +104,13 @@ export function Hero() {
       </div>
 
       {/* ── Hero content — pinned to bottom ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 pb-10">
+      <div className="absolute bottom-0 left-0 right-0 z-10 pb-4 sm:pb-10">
         <Container className="flex flex-col items-center text-center text-white">
 
           {/* Title */}
           <h1
-            className="manrope-regular mb-6 max-w-2xl text-white"
-            style={{ fontSize: "clamp(0.8rem, 4vw, 1.6rem)", lineHeight: 0.8 }}
+            className="manrope-regular mb-4 max-w-2xl text-white sm:mb-6"
+            style={{ fontSize: "clamp(1rem, 4.8vw, 3.3rem)", lineHeight: 1.05 }}
           >
             The Silence of the Alps, Redefined.
           </h1>
@@ -128,10 +141,19 @@ const DEFAULT_GUESTS: Guests = { adults: 2, children: 0 };
 
 function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: HeroBookingBarProps) {
   const activeGuests = guests ?? DEFAULT_GUESTS;
+  const [isMobile, setIsMobile] = useState(false);
   const total = activeGuests.adults + activeGuests.children;
   const guestLabel = guests
     ? `${total} ${total === 1 ? "guest" : "guests"}`
     : null;
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   const dateLabel = () => {
     if (!dateRange?.from) return null;
@@ -151,25 +173,26 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
         }));
         document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
       }}
-      className="flex w-full max-w-[765px] h-[72px] overflow-hidden rounded-xl shadow-2xl"
+      className="w-full max-w-[765px] overflow-hidden rounded-xl bg-[#40403F] shadow-2xl"
     >
       {/* Guests + Arrival & Departure joined section */}
-      <div className="flex flex-1 bg-[#40403F]">
+      <div className="flex flex-col md:flex-row">
+        <div className="flex flex-1 flex-col md:flex-row">
         {/* Guests */}
         <Popover>
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="flex flex-1 items-center gap-3 px-5 py-2 text-left transition-colors hover:bg-[#4e4e4d]"
+              className="flex h-[60px] flex-1 items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-[#4e4e4d] md:h-[72px] md:px-5"
             >
               <img src={PeopleSrc} alt="" className="h-4 w-4 flex-shrink-0" style={{ filter: "brightness(0) invert(1)" }} />
               <div className="min-w-0 flex-1">
-                <div className="monroe-regular text-[14px] uppercase text-white/70">
+                <div className="monroe-regular text-[12px] uppercase text-white/60 md:text-[14px] md:text-white/70">
                   Guests        
                 </div>
-                <div className="monroe-regular mt-0.5 truncate text-sm text-white">
+                <div className="monroe-regular mt-0.5 truncate text-[12px] leading-none text-white md:text-sm md:leading-normal">
                   {guestLabel ?? (
-                    <span className="text-white/50">Number of Guests</span>
+                    <span className="text-white">Number of Guests</span>
                   )}
                 </div>
               </div>
@@ -196,23 +219,23 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
         </Popover>
 
         {/* Divider */}
-        <div className="my-4 w-px flex-shrink-0 bg-white/20" />
+        <div className="mx-4 h-px flex-shrink-0 bg-white/20 md:mx-0 md:my-4 md:h-auto md:w-px" />
 
         {/* Arrival & Departure */}
         <Popover>
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="flex flex-1 items-center gap-3 px-5 py-5 text-left transition-colors hover:bg-[#4e4e4d]"
+              className="flex h-[60px] flex-1 items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-[#4e4e4d] md:h-[72px] md:px-5 md:py-5"
             >
               <CalendarDays className="h-4 w-4 flex-shrink-0 text-white" />
               <div className="min-w-0 flex-1">
-                <div className="monroe-regular text-[14px] uppercase text-white/70">
+                <div className="monroe-regular text-[12px] uppercase text-white/60 md:text-[14px] md:text-white/70">
                   Arrival &amp; Departure
                 </div>
-                <div className="monroe-regular mt-0.5 truncate text-sm text-white">
+                <div className="monroe-regular mt-0.5 truncate text-[12px] leading-none text-white md:text-sm md:leading-normal">
                   {dateLabel() ?? (
-                    <span className="text-white/50">Select Date</span>
+                    <span className="text-white">Select Date</span>
                   )}
                 </div>
               </div>
@@ -221,7 +244,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="w-auto border border-white/10 bg-[#1a1a18]/70 p-0 text-white shadow-2xl backdrop-blur-xl"
+            className="w-[calc(100vw-2rem)] max-w-[360px] border border-white/10 bg-[#1a1a18]/70 p-0 text-white shadow-2xl backdrop-blur-xl sm:w-auto sm:max-w-none"
           >
             <div className="px-5 pt-5 pb-1">
               <p className="monroe-regular text-[10px] uppercase tracking-[0.15em] text-white/50">
@@ -233,7 +256,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
               selected={dateRange}
               onSelect={onDateChange}
               fromDate={new Date()}
-              numberOfMonths={2}
+              numberOfMonths={isMobile ? 1 : 2}
               initialFocus
               classNames={{
                 months: "flex flex-col sm:flex-row gap-6 p-4",
@@ -262,15 +285,16 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
             />
           </PopoverContent>
         </Popover>
-      </div>
+        </div>
 
-      {/* Request CTA */}
-      <button
-        type="submit"
-        className="monroe-regular flex-shrink-0 bg-[#A49781] px-8 text-sm uppercase tracking-[0.1em] text-white transition-colors hover:bg-[#8f8370]"
-      >
-        Request
-      </button>
+        {/* Request CTA */}
+        <button
+          type="submit"
+          className="monroe-regular h-[42px] w-full bg-[#A49781] text-[14px] uppercase tracking-[0.1em] text-white transition-colors hover:bg-[#8f8370] md:h-auto md:w-auto md:px-8 md:text-sm"
+        >
+          Request
+        </button>
+      </div>
     </form>
   );
 }
