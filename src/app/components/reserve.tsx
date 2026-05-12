@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container } from "./shared/Container";
+import { GsapLiquidFillButton } from "./shared/GsapLiquidFillButton";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { toast } from "sonner";
@@ -1015,22 +1016,23 @@ export function Reserve() {
 
             {/* Submit — full width mobile; auto width + kanan di desktop */}
             <div className="flex w-full justify-stretch md:justify-end">
-              <button
+              <GsapLiquidFillButton
                 type="submit"
-                className="manrope-regular w-full py-3.5 text-center transition-opacity hover:opacity-90 md:w-auto md:px-7 md:py-[13px]"
+                motionKey="reserve-submit-request"
+                baseBackgroundColor="#A49781"
+                fillColor="#8f8370"
+                defaultTextColor="#ffffff"
+                hoverTextColor="#ffffff"
+                className="manrope-regular w-full rounded-lg border border-transparent py-3.5 text-center transition-[border-color] duration-700 ease-out hover:border-[rgba(50,50,50,0.15)] md:w-auto md:px-7 md:py-[13px]"
                 style={{
                   fontSize: 11,
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
-                  backgroundColor: "rgba(164,151,129,1)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: 8,
                   cursor: "pointer",
                 }}
               >
                 Submit Request
-              </button>
+              </GsapLiquidFillButton>
             </div>
           </form>
         </Container>

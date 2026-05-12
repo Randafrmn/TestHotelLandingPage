@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import gsap from "gsap";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { Container } from "./shared/Container";
@@ -61,7 +62,7 @@ export function Hero() {
     <section
       data-section-animate
       data-entrance-pace="slow"
-      className="relative min-h-screen w-full overflow-hidden"
+      className="relative min-h-screen w-full overflow-visible"
     >
       {/* ── Carousel ── */}
       <div ref={emblaRef} className="absolute inset-0 overflow-hidden">
@@ -112,14 +113,7 @@ export function Hero() {
       <div className="absolute bottom-0 left-0 right-0 z-10 pb-4 sm:pb-10">
         <Container className="flex flex-col items-center text-center text-white">
 
-          {/* Title */}
-          <h1
-            data-reveal
-            className="manrope-regular mb-4 text-white sm:mb-6"
-            style={{ fontSize: "clamp(1rem, 4.8vw, 2rem)", lineHeight: 1.05 }}
-          >
-            The Silence of the Alps, Redefined.
-          </h1>
+          <CinematicHeroTitle />
 
           {/* Booking bar */}
           <div data-reveal className="w-full max-w-[765px]">
@@ -133,6 +127,129 @@ export function Hero() {
         </Container>
       </div>
     </section>
+  );
+}
+
+/* ─── Cinematic hero title (first load only) ───────────────────── */
+
+const HERO_TITLE_HOLD_SEC = 3;
+/** Gerak turun ke posisi awal — dipercepat */
+const HERO_TITLE_MOVE_SEC = 4;
+/** Satu siklus gradien bergeser kanan → kiri (loop) */
+const HERO_TITLE_GRADIENT_LOOP_SEC = 7;
+
+/** Sumbu 90° + lebar 200% agar geser horizontal halus */
+const HERO_TITLE_SHINE_GRADIENT = `linear-gradient(
+  90deg,
+  #f5f2ed 0%,
+  #d8ccbb 20%,
+  #A49781 50%,
+  #b7ab96 75%,
+  #f5f2ed 100%
+)`;
+
+function CinematicHeroTitle() {
+  const h1Ref = useRef<HTMLHeadingElement>(null);
+  const shineRef = useRef<HTMLSpanElement>(null);
+
+  useLayoutEffect(() => {
+    const el = h1Ref.current;
+    const shine = shineRef.current;
+    if (!el || !shine) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const applyGradientClip = () => {
+      shine.style.setProperty("background-image", HERO_TITLE_SHINE_GRADIENT);
+      shine.style.setProperty("background-size", "200% 100%");
+      shine.style.setProperty("background-position", "100% center");
+      shine.style.setProperty("background-repeat", "no-repeat");
+      shine.style.setProperty("-webkit-background-clip", "text");
+      shine.style.setProperty("background-clip", "text");
+      shine.style.setProperty("-webkit-text-fill-color", "transparent");
+      shine.style.setProperty("color", "transparent");
+    };
+
+    const clearShineStyles = () => {
+      shine.style.removeProperty("background-image");
+      shine.style.removeProperty("background-size");
+      shine.style.removeProperty("background-position");
+      shine.style.removeProperty("background-repeat");
+      shine.style.removeProperty("-webkit-background-clip");
+      shine.style.removeProperty("background-clip");
+      shine.style.removeProperty("-webkit-text-fill-color");
+      shine.style.removeProperty("color");
+    };
+
+    const ctx = gsap.context(() => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) return;
+
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const vcx = window.innerWidth / 2;
+      const vcy = window.innerHeight / 2;
+      const dx = vcx - cx;
+      const dy = vcy - cy;
+
+      const narrow = window.innerWidth < 640;
+      const maxByWidth = (window.innerWidth * (narrow ? 0.92 : 0.88)) / rect.width;
+      const maxByHeight = (window.innerHeight * (narrow ? 0.36 : 0.42)) / rect.height;
+      const maxScale = narrow ? 1.52 : 2.05;
+      const minScale = narrow ? 1.2 : 1.32;
+      const scaleFrom = Math.min(maxScale, Math.max(minScale, Math.min(maxByWidth, maxByHeight) * 0.98));
+
+      gsap.set(el, {
+        x: dx,
+        y: dy,
+        scale: scaleFrom,
+        opacity: 1,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+
+      applyGradientClip();
+
+      const loopTween = gsap.fromTo(
+        shine,
+        { backgroundPosition: "100% center" },
+        {
+          backgroundPosition: "0% center",
+          duration: HERO_TITLE_GRADIENT_LOOP_SEC,
+          ease: "none",
+          repeat: -1,
+        },
+      );
+
+      gsap.to(el, {
+        x: 0,
+        y: 0,
+        scale: 1,
+        duration: HERO_TITLE_MOVE_SEC,
+        delay: HERO_TITLE_HOLD_SEC,
+        ease: "sine.inOut",
+        onComplete: () => {
+          loopTween.kill();
+          clearShineStyles();
+        },
+      });
+    }, el);
+
+    return () => {
+      ctx.revert();
+      clearShineStyles();
+    };
+  }, []);
+
+  return (
+    <h1
+      ref={h1Ref}
+      className="manrope-regular mb-4 w-full max-w-full text-center text-[clamp(0.82rem,3.5vw,1.12rem)] text-white will-change-transform [transform:translateZ(0)] sm:mb-6 sm:text-[clamp(1rem,4.8vw,2rem)]"
+      style={{ lineHeight: 1.08 }}
+    >
+      <span ref={shineRef} className="inline-block max-w-full px-0.5">
+        The Silence of the Alps, Redefined.
+      </span>
+    </h1>
   );
 }
 
@@ -208,6 +325,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
             </button>
           </PopoverTrigger>
           <PopoverContent
+            presenceVariant="smooth"
             align="start"
             className="w-72 border border-white/10 bg-[#1a1a18]/70 p-0 text-white shadow-2xl backdrop-blur-xl"
           >
@@ -254,6 +372,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
             </button>
           </PopoverTrigger>
           <PopoverContent
+            presenceVariant="smooth"
             align="start"
             className="w-[calc(100vw-2rem)] max-w-[360px] border border-white/10 bg-[#1a1a18]/70 p-0 text-white shadow-2xl backdrop-blur-xl sm:w-auto sm:max-w-none"
           >

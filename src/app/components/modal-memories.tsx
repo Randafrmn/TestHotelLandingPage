@@ -1,4 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useLayoutEffect, useRef } from "react";
+import gsap from "gsap";
+import { playAuraModalEnter, playAuraModalExit } from "@/app/lib/overlayMotion";
 import ArrowSrc from "@/assets/icons/Arrow.svg";
 
 import Memories1Src from "@/assets/images/memories1.svg";
@@ -47,6 +49,32 @@ export function ModalMemories({ onClose }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [thumbPage, setThumbPage] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const closingRef = useRef(false);
+
+  useLayoutEffect(() => {
+    const b = backdropRef.current;
+    const p = panelRef.current;
+    if (!b || !p) return;
+    playAuraModalEnter(b, p);
+  }, []);
+
+  const requestClose = useCallback(() => {
+    if (closingRef.current) return;
+    const b = backdropRef.current;
+    const p = panelRef.current;
+    if (!b || !p) {
+      onClose();
+      return;
+    }
+    closingRef.current = true;
+    playAuraModalExit(b, p, () => {
+      closingRef.current = false;
+      onClose();
+    });
+  }, [onClose]);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -66,6 +94,29 @@ export function ModalMemories({ onClose }: Props) {
   );
 
   const mainImage = images[selectedIdx] ?? images[0];
+
+  useLayoutEffect(() => {
+    const el = previewRef.current;
+    if (!el) return;
+    gsap.killTweensOf(el);
+    gsap.fromTo(
+      el,
+      {
+        autoAlpha: 0,
+        y: 10,
+        scale: 1.012,
+        filter: "blur(4px) brightness(1.04)",
+      },
+      {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px) brightness(1)",
+        duration: 0.62,
+        ease: "sine.inOut",
+      },
+    );
+  }, [mainImage]);
 
   useEffect(() => {
     if (images.length === 0) return;
@@ -110,22 +161,15 @@ export function ModalMemories({ onClose }: Props) {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") requestClose();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  }, [requestClose]);
 
   return (
     <>
       <style>{`
-        @keyframes gallery-fade {
-          from { opacity: 0; transform: scale(1.012); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-        .gallery-preview-enter {
-          animation: gallery-fade 0.3s ease forwards;
-        }
         .modal-memories-tabs::-webkit-scrollbar {
           display: none;
         }
@@ -136,17 +180,18 @@ export function ModalMemories({ onClose }: Props) {
       `}</style>
 
       <div
+        ref={backdropRef}
         className="fixed inset-0 z-50 flex w-full flex-col items-center justify-center px-4 py-8 md:px-6 md:py-10"
         style={{
           backgroundColor: "rgba(50,50,50,0.92)",
           backdropFilter: "blur(22px)",
           WebkitBackdropFilter: "blur(22px)",
         }}
-        onClick={onClose}
+        onClick={() => requestClose()}
       >
         <button
           type="button"
-          onClick={onClose}
+          onClick={() => requestClose()}
           className="fixed flex items-center justify-center transition-opacity hover:opacity-70"
           style={{
             top: "20px",
@@ -170,7 +215,8 @@ export function ModalMemories({ onClose }: Props) {
         </button>
 
         <div
-          className="relative z-10 mx-auto flex w-full min-w-0 max-w-[min(100%,560px)] flex-col md:max-w-[min(100%,640px)]"
+          ref={panelRef}
+          className="relative z-10 mx-auto flex w-full min-w-0 max-w-[min(100%,560px)] flex-col overflow-hidden [transform-style:preserve-3d] will-change-transform md:max-w-[min(100%,640px)]"
           style={{ backgroundColor: "transparent" }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -232,11 +278,9 @@ export function ModalMemories({ onClose }: Props) {
             }}
           >
             <div
-              key={mainImage}
-              className="gallery-preview-enter"
+              ref={previewRef}
+              className="absolute inset-0"
               style={{
-                position: "absolute",
-                inset: 0,
                 backgroundImage: `url(${mainImage})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",

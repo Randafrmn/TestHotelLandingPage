@@ -1,6 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import { playAuraModalEnter, playAuraModalExit } from "@/app/lib/overlayMotion";
 import { CarouselArrowButton } from "./shared/CarouselArrowButton";
+import { GsapLiquidFillButton } from "./shared/GsapLiquidFillButton";
 import ArrowDetailSrc from "@/assets/icons/arrowdetaildesktop.svg";
 import PeopleDetailSrc from "@/assets/icons/peopledetaildesktop.svg";
 import BedSrc from "@/assets/icons/bed.svg";
@@ -39,6 +41,36 @@ export function RoomModal({ room, onClose }: Props) {
   const [modalEmblaRef, modalEmblaApi] = useEmblaCarousel({ loop: true, duration: 30 });
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closingRef = useRef(false);
+
+  useLayoutEffect(() => {
+    const b = backdropRef.current;
+    const p = panelRef.current;
+    if (!b || !p) return;
+    playAuraModalEnter(b, p);
+  }, []);
+
+  const requestClose = useCallback(
+    (afterComplete?: () => void) => {
+      if (closingRef.current) return;
+      const b = backdropRef.current;
+      const p = panelRef.current;
+      if (!b || !p) {
+        onClose();
+        afterComplete?.();
+        return;
+      }
+      closingRef.current = true;
+      playAuraModalExit(b, p, () => {
+        closingRef.current = false;
+        onClose();
+        afterComplete?.();
+      });
+    },
+    [onClose],
+  );
 
   useEffect(() => {
     if (!modalEmblaApi) return;
@@ -71,12 +103,14 @@ export function RoomModal({ room, onClose }: Props) {
 
   return (
     <div
+      ref={backdropRef}
       className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 py-8 md:p-4 md:py-10"
       style={{ backgroundColor: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
-      onClick={onClose}
+      onClick={() => requestClose()}
     >
       <div
-        className="relative my-auto flex w-full overflow-hidden bg-white"
+        ref={panelRef}
+        className="relative my-auto flex w-full overflow-hidden bg-white [transform-style:preserve-3d] will-change-transform"
         style={{
           borderRadius: "12px",
           maxWidth: isMobile ? "350px" : "1060px",
@@ -291,26 +325,38 @@ export function RoomModal({ room, onClose }: Props) {
           <div className="mt-auto flex gap-3 pt-4">
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => requestClose()}
               className="manrope-regular flex-1 transition-colors hover:bg-[rgba(50,50,50,0.04)]"
               style={{ padding: isMobile ? "9px 0" : "11px 0", fontSize: isMobile ? "10px" : "11px", letterSpacing: "0.12em", textTransform: "uppercase", border: "1px solid rgba(50,50,50,0.2)", borderRadius: "8px", color: "rgba(50,50,50,1)", background: "transparent" }}
             >
               Close
             </button>
-            <button
+            <GsapLiquidFillButton
               type="button"
-              className="manrope-regular flex-1 text-white transition-opacity hover:opacity-90"
-              style={{ padding: isMobile ? "9px 0" : "11px 0", fontSize: isMobile ? "10px" : "11px", letterSpacing: "0.12em", textTransform: "uppercase", backgroundColor: "rgba(164,151,129,1)", borderRadius: "8px", border: "none", cursor: "pointer" }}
+              motionKey={`${room.name}-reserve-suite`}
+              baseBackgroundColor="#A49781"
+              fillColor="#8f8370"
+              defaultTextColor="#ffffff"
+              hoverTextColor="#ffffff"
+              className="manrope-regular flex-1 rounded-[8px] border border-transparent transition-[border-color] duration-700 ease-out hover:border-white/25"
+              style={{
+                padding: isMobile ? "9px 0" : "11px 0",
+                fontSize: isMobile ? "10px" : "11px",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+              }}
               onClick={() => {
                 window.dispatchEvent(new CustomEvent("room:reserve-request", { detail: { room: room.name } }));
-                onClose();
-                setTimeout(() => {
-                  document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
-                }, 50);
+                requestClose(() => {
+                  setTimeout(() => {
+                    document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
+                  }, 50);
+                });
               }}
             >
               Reserve This Suite
-            </button>
+            </GsapLiquidFillButton>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Container } from "./shared/Container";
+import { GsapLiquidFillButton } from "./shared/GsapLiquidFillButton";
 import { SliderNavButtons } from "./shared/SliderNavButtons";
 import { RoomModal, type Room } from "./room-modal";
 import Rooms1Src from "@/assets/images/Rooms1.svg";
@@ -121,11 +122,11 @@ export function Rooms() {
     () =>
       ({
         loop: true,
-        align: isMobile ? "start" : "end",
+        align: "start",
         slidesToScroll: 1,
         duration: 25,
       }) as const,
-    [isMobile],
+    [],
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions);
@@ -159,12 +160,11 @@ export function Rooms() {
     };
   }, [emblaApi]);
 
-  /* Desktop: viewport “starts from the right” (last suites in view); mobile: first slide */
+  /* Carousel starts at first slide (left) on all breakpoints */
   useEffect(() => {
     if (!emblaApi) return;
     const place = () => {
-      const idx = isMobile ? 0 : Math.max(0, ROOMS.length - 1);
-      emblaApi.scrollTo(idx, true);
+      emblaApi.scrollTo(0, true);
     };
     emblaApi.on("init", place);
     const t = window.setTimeout(place, 0);
@@ -178,7 +178,7 @@ export function Rooms() {
       cancelAnimationFrame(raf1);
       cancelAnimationFrame(raf2);
     };
-  }, [emblaApi, isMobile]);
+  }, [emblaApi]);
 
   return (
     <section
@@ -289,14 +289,15 @@ export function Rooms() {
                   </div>
                 </div>
 
-                <button
+                <GsapLiquidFillButton
                   type="button"
+                  motionKey={room.name}
+                  className="manrope-regular w-full rounded-[8px] border border-[rgba(50,50,50,0.2)] py-3 text-xs uppercase tracking-[0.15em] transition-[border-color] duration-700 ease-out hover:border-[#A49781]/40 active:border-[#A49781]/40"
+                  aria-label={`See details for ${room.name}`}
                   onClick={() => setActiveRoom(room)}
-                  className="manrope-regular w-full py-3 text-xs uppercase tracking-[0.15em] text-[rgba(50,50,50,1)] hover:bg-[#A49781] hover:text-white hover:border-[#A49781] transition-colors duration-200"
-                  style={{ border: "1px solid rgba(50,50,50,0.2)", borderRadius: "8px" }}
                 >
                   See Details
-                </button>
+                </GsapLiquidFillButton>
               </div>
             </div>
           ))}
