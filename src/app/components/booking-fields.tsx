@@ -100,7 +100,7 @@ export function DateRangeField({
       <PopoverTrigger asChild>
         <button type="button" className="block w-full">
           <FieldShell
-            label="Check-in – Check-out"
+            label="Arrival & Departure"
             icon={<CalendarIcon className="h-4 w-4" />}
             variant={variant}
             value={formatRange()}

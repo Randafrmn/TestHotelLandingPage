@@ -1,16 +1,18 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Calendar } from "./ui/calendar";
 import { Container } from "./shared/Container";
 import { CarouselArrowButton } from "./shared/CarouselArrowButton";
-import { Users, CalendarDays, ChevronDown, Minus, Plus } from "lucide-react";
+import { CalendarDays, Minus, Plus } from "lucide-react";
+import PeopleSrc from "@/assets/icons/People.svg";
+import ArrowDownSrc from "@/assets/icons/ArrowDown.svg";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import type { Guests } from "./booking-fields";
 import HeroImage1 from "@/assets/images/HeroImage1.svg";
 import HeroImage2 from "@/assets/images/HeroImage2.svg";
-import HeroImage3 from "@/assets/images/HeroImage3.svg";
+import HeroImage3 from "@/assets/images/About2.svg";
 
 /* ─── Slide data ────────────────────────────────────────────────── */
 
@@ -23,12 +25,29 @@ const SLIDES = [
 /* ─── Hero ──────────────────────────────────────────────────────── */
 
 export function Hero() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 30 });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, duration: 30 });
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [guests, setGuests] = useState<Guests | null>(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const update = () => {
+      setCanPrev(emblaApi.canScrollPrev());
+      setCanNext(emblaApi.canScrollNext());
+    };
+    update();
+    emblaApi.on("select", update);
+    emblaApi.on("reInit", update);
+    return () => {
+      emblaApi.off("select", update);
+      emblaApi.off("reInit", update);
+    };
+  }, [emblaApi]);
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
@@ -57,14 +76,16 @@ export function Hero() {
           <CarouselArrowButton
             direction="prev"
             onClick={scrollPrev}
+            disabled={!canPrev}
             className="pointer-events-auto"
-            bgColor="#11120E"
+            bgColor="rgba(0,0,0,0.4)"
           />
           <CarouselArrowButton
             direction="next"
             onClick={scrollNext}
+            disabled={!canNext}
             className="pointer-events-auto"
-            bgColor="#423425"
+            bgColor="rgba(0,0,0,0.4)"
           />
         </Container>
       </div>
@@ -122,6 +143,12 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
     <form
       onSubmit={(e) => {
         e.preventDefault();
+        window.dispatchEvent(new CustomEvent("hero:reserve-request", {
+          detail: {
+            dateRange: dateRange ? { from: dateRange.from?.toISOString(), to: dateRange.to?.toISOString() } : null,
+            guests: activeGuests,
+          },
+        }));
         document.getElementById("reserve")?.scrollIntoView({ behavior: "smooth" });
       }}
       className="flex w-full max-w-[765px] h-[72px] overflow-hidden rounded-xl shadow-2xl"
@@ -135,7 +162,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
               type="button"
               className="flex flex-1 items-center gap-3 px-5 py-2 text-left transition-colors hover:bg-[#4e4e4d]"
             >
-              <Users className="h-4 w-4 flex-shrink-0 text-white" />
+              <img src={PeopleSrc} alt="" className="h-4 w-4 flex-shrink-0" style={{ filter: "brightness(0) invert(1)" }} />
               <div className="min-w-0 flex-1">
                 <div className="monroe-regular text-[14px] uppercase text-white/70">
                   Guests        
@@ -146,7 +173,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
                   )}
                 </div>
               </div>
-              <ChevronDown className="h-3.5 w-3.5 flex-shrink-0 text-white/50" />
+              <img src={ArrowDownSrc} alt="" className="h-3.5 w-3.5 flex-shrink-0" style={{ opacity: 0.5 }} />
             </button>
           </PopoverTrigger>
           <PopoverContent
@@ -189,7 +216,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
                   )}
                 </div>
               </div>
-              <ChevronDown className="h-3.5 w-3.5 flex-shrink-0 text-white/50" />
+              <img src={ArrowDownSrc} alt="" className="h-3.5 w-3.5 flex-shrink-0" style={{ opacity: 0.5 }} />
             </button>
           </PopoverTrigger>
           <PopoverContent

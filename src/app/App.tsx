@@ -2,6 +2,8 @@ import { Hero } from "./components/hero";
 import { About } from "./components/about";
 import { Rooms } from "./components/rooms";
 import { Amenities } from "./components/amenities";
+import { VisualMemories } from "./components/visual-memories";
+import { Question } from "./components/question";
 import { Reserve } from "./components/reserve";
 import { Footer } from "./components/footer";
 import { Navbar } from "./components/navbar";
@@ -15,6 +17,8 @@ export default function App() {
       <About />
       <Rooms />
       <Amenities />
+      <VisualMemories />
+      <Question />
       <Reserve />
       <Footer />
       <Toaster />
