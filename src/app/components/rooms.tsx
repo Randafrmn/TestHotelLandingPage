@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Container } from "./shared/Container";
 import { SliderNavButtons } from "./shared/SliderNavButtons";
-import { RoomModal, type Room } from "./RoomModal";
+import { RoomModal, type Room } from "./room-modal";
 import Rooms1Src from "@/assets/images/Rooms1.svg";
 import Rooms2Src from "@/assets/images/Rooms2.svg";
 import Rooms3Src from "@/assets/images/Rooms3.svg";

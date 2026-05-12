@@ -173,6 +173,16 @@ function ReserveDateField({
   dateRange?: DateRange;
   onChange: (r?: DateRange) => void;
 }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   const formatRange = () => {
     if (!dateRange?.from) return "";
     if (!dateRange.to) return format(dateRange.from, "MMM d");
@@ -188,7 +198,10 @@ function ReserveDateField({
           placeholder="Arrival & Departure"
         />
       </PopoverTrigger>
-      <PopoverContent align="start" className={`w-auto p-0 ${darkPopover}`}>
+      <PopoverContent
+        align="start"
+        className={`w-[calc(100vw-2rem)] max-w-[360px] p-0 sm:w-auto sm:max-w-none ${darkPopover}`}
+      >
         <div className="px-5 pt-5 pb-1">
           <p className="monroe-regular text-[10px] uppercase tracking-[0.15em] text-white/50">
             Select Dates
@@ -199,7 +212,7 @@ function ReserveDateField({
           selected={dateRange}
           onSelect={onChange}
           fromDate={new Date()}
-          numberOfMonths={2}
+          numberOfMonths={isMobile ? 1 : 2}
           initialFocus
           classNames={DARK_CAL_CLASSNAMES}
         />
@@ -458,7 +471,7 @@ export function Reserve() {
             </p>
           </div>
 
-          {/* Form card — single vertical column (mobile + desktop) */}
+          {/* Form card — vertikal di mobile, grid 2 kolom di desktop (md+) */}
           <form
             onSubmit={onSubmit}
             className="mx-auto w-full max-w-[780px] px-4 py-6 sm:px-8 sm:py-8"
@@ -469,7 +482,7 @@ export function Reserve() {
           >
             {/* Your Details */}
             <SectionLabel>Your Details</SectionLabel>
-            <div className="mb-7 flex flex-col gap-2.5">
+            <div className="mb-7 grid grid-cols-1 gap-2.5 md:grid-cols-2 md:gap-[10px]">
               <FormInput icon={<img src={PersonSrc} alt="" style={{ width: 15, height: 15, objectFit: "contain", filter: "brightness(0)" }} />} placeholder="First Name" required />
               <FormInput icon={<img src={PersonSrc} alt="" style={{ width: 15, height: 15, objectFit: "contain", filter: "brightness(0)" }} />} placeholder="Last Name" required />
               <FormInput icon={<img src={MailSrc} alt="" style={{ width: 15, height: 15, objectFit: "contain", filter: "brightness(0)" }} />} type="email" placeholder="Email Address" required />
@@ -478,15 +491,17 @@ export function Reserve() {
 
             {/* Stay */}
             <SectionLabel>Stay</SectionLabel>
-            <div className="mb-7 flex flex-col gap-2.5">
+            <div className="mb-[10px] grid grid-cols-1 gap-2.5 md:grid-cols-2 md:gap-[10px]">
               <ReserveDateField dateRange={dateRange} onChange={setDateRange} />
               <ReserveGuestsField value={guests} onChange={setGuests} />
+            </div>
+            <div className="mb-7">
               <RoomField value={room} onChange={setRoom} />
             </div>
 
             {/* Add-ons */}
             <SectionLabel>Your Details</SectionLabel>
-            <div className="mb-7 flex flex-col gap-2.5">
+            <div className="mb-7 grid grid-cols-1 gap-2.5 md:grid-cols-2 md:gap-[10px]">
               {EXTRAS.map((extra) => {
                 const checked = selectedExtras.includes(extra);
                 return (
@@ -539,23 +554,25 @@ export function Reserve() {
               onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(50,50,50,0.15)"; }}
             />
 
-            {/* Submit — full width, like mockup */}
-            <button
-              type="submit"
-              className="manrope-regular w-full py-3.5 text-center transition-opacity hover:opacity-90"
-              style={{
-                fontSize: 11,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                backgroundColor: "rgba(164,151,129,1)",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
-            >
-              Submit Request
-            </button>
+            {/* Submit — full width mobile; auto width + kanan di desktop */}
+            <div className="flex w-full justify-stretch md:justify-end">
+              <button
+                type="submit"
+                className="manrope-regular w-full py-3.5 text-center transition-opacity hover:opacity-90 md:w-auto md:px-7 md:py-[13px]"
+                style={{
+                  fontSize: 11,
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  backgroundColor: "rgba(164,151,129,1)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                }}
+              >
+                Submit Request
+              </button>
+            </div>
           </form>
         </Container>
       </div>
