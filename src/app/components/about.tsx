@@ -70,8 +70,14 @@ export function About() {
   const indexRef = useRef(START_IDX);
   const trackRef = useRef<HTMLDivElement>(null);
   const swipeListenersCleanup = useRef<(() => void) | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
+  const animatingRef = useRef(false);
   const DRAG_THRESHOLD = 50; // px needed to trigger slide change
   const isMobile = viewportW < 768;
+
+  useEffect(() => {
+    animatingRef.current = animating;
+  }, [animating]);
 
   useEffect(() => {
     indexRef.current = index;
@@ -119,16 +125,39 @@ export function About() {
   const offsetPx = -(index * gapPx) + peekPx;
 
   const go = (dir: 1 | -1) => {
-    if (animating) return;
+    if (animatingRef.current) return;
     setAnimating(true);
+    animatingRef.current = true;
     setNoTransition(false);
     setIndex((i) => i + dir);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartXRef.current;
+    touchStartXRef.current = null;
+    if (start == null) return;
+    const t = e.changedTouches[0];
+    if (!t) return;
+    const delta = t.clientX - start;
+    if (Math.abs(delta) >= DRAG_THRESHOLD) {
+      go(delta < 0 ? 1 : -1);
+    }
+  };
+
+  const handleTouchCancel = () => {
+    touchStartXRef.current = null;
   };
 
   const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
     if (e.propertyName !== "transform") return;
     if (trackRef.current && e.target !== trackRef.current) return;
     setAnimating(false);
+    animatingRef.current = false;
     const i = indexRef.current;
     if (i === JUMP_LEFT_FROM) {
       setNoTransition(true);
@@ -148,6 +177,7 @@ export function About() {
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "touch") return;
     if (!e.isPrimary) return;
     const startX = e.clientX;
     const pointerId = e.pointerId;
@@ -220,13 +250,18 @@ export function About() {
 
       {/* ── Track ── */}
       <div
-        className="touch-pan-x select-none overflow-hidden"
+        className="touch-none select-none overflow-hidden"
+        style={{ touchAction: "none" }}
         onPointerDown={handlePointerDown}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
       >
         <div
           ref={trackRef}
-          className="flex touch-pan-x isolate [transform:translate3d(0,0,0)]"
+          className="flex touch-none isolate [transform:translate3d(0,0,0)]"
           style={{
+            touchAction: "none",
             gap: `${gapPx}px`,
             transform: `translate3d(calc(${offsetVw}vw + ${offsetPx}px), 0, 0)`,
             transition: noTransition
@@ -242,8 +277,9 @@ export function About() {
               key={`${i}-${img.alt}`}
               role="img"
               aria-label={img.alt}
-              className="flex-shrink-0 touch-pan-x overflow-hidden bg-[#ebe8e4] [backface-visibility:hidden] [transform:translateZ(0)]"
+              className="flex-shrink-0 touch-none overflow-hidden bg-[#ebe8e4] [backface-visibility:hidden] [transform:translateZ(0)]"
               style={{
+                touchAction: "none",
                 width: `${slideW}vw`,
                 backgroundImage: `url(${img.src})`,
                 backgroundSize: "cover",
