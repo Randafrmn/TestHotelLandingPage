@@ -424,53 +424,52 @@ export function Reserve() {
   return (
     <section
       id="reserve"
+      className="relative py-16 md:py-20"
       style={{
-        position: "relative",
         backgroundImage: `url(${BackReserveSrc})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        paddingTop: 80,
-        paddingBottom: 80,
       }}
     >
-      <div className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.48)" }} />
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/40 to-black/55"
+        aria-hidden
+      />
 
-      <div className="relative" style={{ zIndex: 1 }}>
+      <div className="relative z-[1]">
         <Container>
-          {/* Header */}
-          <div className="mb-10 text-center">
-            <p className="monroe-regular mb-3" style={{ fontSize: 16, color: "rgba(255,255,255,0.75)" }}>
+          {/* Header — centered white type (same scale as other sections) */}
+          <div className="mb-8 px-1 text-center md:mb-10">
+            <p
+              className="monroe-regular mb-3 text-[14px] text-white/80 md:text-[16px]"
+            >
               — Plan Your Stay —
             </p>
             <h2
-              className="manrope-regular mb-4"
-              style={{ fontSize: 40, fontWeight: 400, lineHeight: "140%", color: "rgba(255,255,255,1)" }}
+              className="manrope-regular mb-4 text-[clamp(26px,6vw,40px)] font-normal leading-[140%] text-white"
             >
               Request a Personal Quote
             </h2>
             <p
-              className="manrope-regular"
-              style={{ fontSize: 16, lineHeight: "150%", color: "rgba(255,255,255,0.7)", maxWidth: "100%", margin: "0 auto" }}
+              className="manrope-regular mx-auto max-w-[min(100%,520px)] text-[16px] leading-[150%] text-white/75 md:max-w-[640px]"
             >
               Fill out the form below, and our team will get back to you within 24 hours with a
               non-binding offer tailored to your needs.
             </p>
           </div>
 
-          {/* Form card */}
+          {/* Form card — single vertical column (mobile + desktop) */}
           <form
             onSubmit={onSubmit}
+            className="mx-auto w-full max-w-[780px] px-4 py-6 sm:px-8 sm:py-8"
             style={{
               backgroundColor: "rgba(255,255,255,1)",
               borderRadius: 8,
-              padding: "32px 32px 28px",
-              maxWidth: 780,
-              margin: "0 auto",
             }}
           >
             {/* Your Details */}
             <SectionLabel>Your Details</SectionLabel>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 28 }}>
+            <div className="mb-7 flex flex-col gap-2.5">
               <FormInput icon={<img src={PersonSrc} alt="" style={{ width: 15, height: 15, objectFit: "contain", filter: "brightness(0)" }} />} placeholder="First Name" required />
               <FormInput icon={<img src={PersonSrc} alt="" style={{ width: 15, height: 15, objectFit: "contain", filter: "brightness(0)" }} />} placeholder="Last Name" required />
               <FormInput icon={<img src={MailSrc} alt="" style={{ width: 15, height: 15, objectFit: "contain", filter: "brightness(0)" }} />} type="email" placeholder="Email Address" required />
@@ -479,23 +478,21 @@ export function Reserve() {
 
             {/* Stay */}
             <SectionLabel>Stay</SectionLabel>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+            <div className="mb-7 flex flex-col gap-2.5">
               <ReserveDateField dateRange={dateRange} onChange={setDateRange} />
               <ReserveGuestsField value={guests} onChange={setGuests} />
-            </div>
-            <div style={{ marginBottom: 28 }}>
               <RoomField value={room} onChange={setRoom} />
             </div>
 
             {/* Add-ons */}
             <SectionLabel>Your Details</SectionLabel>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 28 }}>
+            <div className="mb-7 flex flex-col gap-2.5">
               {EXTRAS.map((extra) => {
                 const checked = selectedExtras.includes(extra);
                 return (
                   <label
                     key={extra}
-                    className="manrope-regular"
+                    className="manrope-regular w-full"
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -526,7 +523,7 @@ export function Reserve() {
             <textarea
               rows={5}
               placeholder="Anniversary, dietary preferences, arrival time..."
-              className="manrope-regular w-full placeholder:text-[rgba(50,50,50,0.45)]"
+              className="manrope-regular mb-6 w-full placeholder:text-[rgba(50,50,50,0.45)]"
               style={{
                 padding: "14px 16px",
                 border: "1px solid rgba(50,50,50,0.15)",
@@ -537,32 +534,28 @@ export function Reserve() {
                 outline: "none",
                 resize: "vertical",
                 fontFamily: "inherit",
-                marginBottom: 24,
               }}
               onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(164,151,129,0.6)"; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(50,50,50,0.15)"; }}
             />
 
-            {/* Submit */}
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="manrope-regular transition-opacity hover:opacity-85"
-                style={{
-                  padding: "13px 28px",
-                  fontSize: 11,
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  backgroundColor: "rgba(164,151,129,1)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: 8,
-                  cursor: "pointer",
-                }}
-              >
-                Submit Request
-              </button>
-            </div>
+            {/* Submit — full width, like mockup */}
+            <button
+              type="submit"
+              className="manrope-regular w-full py-3.5 text-center transition-opacity hover:opacity-90"
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                backgroundColor: "rgba(164,151,129,1)",
+                color: "white",
+                border: "none",
+                borderRadius: 8,
+                cursor: "pointer",
+              }}
+            >
+              Submit Request
+            </button>
           </form>
         </Container>
       </div>

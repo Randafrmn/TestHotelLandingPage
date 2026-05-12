@@ -237,7 +237,7 @@ function HeroBookingBar({ dateRange, onDateChange, guests, onGuestsChange }: Her
                 <div className="monroe-regular text-[12px] uppercase text-white/60 md:text-[14px] md:text-white/70">
                   Arrival &amp; Departure
                 </div>
-                <div className="monroe-regular mt-0.5 truncate text-[12px] leading-none text-white md:text-sm md:leading-normal">
+                <div className="monroe-regular mt-0.5 truncate text-[12px] text-white md:text-sm leading-normal">
                   {dateLabel() ?? (
                     <span className="text-white">Select Date</span>
                   )}

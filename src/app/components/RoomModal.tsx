@@ -217,7 +217,7 @@
                 {room.amenities.map(({ icon, label }) => (
                   <div key={label} className="flex items-center gap-1.5">
                     <img src={icon} alt="" style={{ width: isMobile ? "14px" : "18px", height: isMobile ? "10px" : "13px", objectFit: "contain", flexShrink: 0, filter: "brightness(0) invert(67%) sepia(10%) saturate(675%) hue-rotate(358deg) brightness(89%) contrast(89%)" }} />
-                    <span className="manrope-regular" style={{ fontSize: isMobile ? "12px" : "11.5px", color: "rgba(50,50,50,0.75)" }}>
+                    <span className="manrope-regular" style={{ fontSize: isMobile ? "12px" : "11.5px", color: "rgba(50,50,50,1)" }}>
                       {label}
                     </span>
                   </div>
@@ -229,18 +229,42 @@
               <p className="manrope-regular" style={{ fontSize: isMobile ? "12px" : "11.5px", fontWeight: 500, color: "rgba(50,50,50,1)", marginBottom: "6px" }}>
                 Included services:
               </p>
-              <ul style={{ display: "flex", flexDirection: "column", gap: isMobile ? "4px" : "5px" }}>
+              <ul
+                className="flex flex-col"
+                style={{ gap: isMobile ? "12px" : "5px" }}
+              >
                 {room.services.map((s) => (
-                  <li key={s} className="flex items-start gap-2">
+                  <li
+                    key={s}
+                    className={`flex text-left ${isMobile ? "items-center gap-2" : "items-start gap-2"}`}
+                  >
                     <span
-                      className="flex items-center justify-center flex-shrink-0"
-                      style={{ marginTop: "2px", width: "13px", height: "13px", borderRadius: "50%", backgroundColor: "rgba(164,151,129,1)" }}
+                      className="flex flex-shrink-0 items-center justify-center rounded-full"
+                      style={{
+                        width: isMobile ? "13px" : "13px",
+                        height: isMobile ? "13px" : "13px",
+                        marginTop: isMobile ? 0 : "2px",
+                        backgroundColor: "rgba(164,151,129,1)",
+                      }}
                     >
-                      <svg width="7" height="5" viewBox="0 0 8 6" fill="none">
+                      <svg
+                        width={isMobile ? 10 : 7}
+                        height={isMobile ? 7 : 5}
+                        viewBox="0 0 8 6"
+                        fill="none"
+                        aria-hidden
+                      >
                         <path d="M1 3L3 5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </span>
-                    <span className="manrope-regular" style={{ fontSize: isMobile ? "12px" : "11px", lineHeight: "155%", color: "rgba(50,50,50,0.75)" }}>
+                    <span
+                      className="manrope-regular min-w-0 flex-1"
+                      style={{
+                        fontSize: isMobile ? "11px" : "11px",
+                        lineHeight: isMobile ? "150%" : "155%",
+                        color: "rgba(50,50,50,1)",
+                      }}
+                    >
                       {s}
                     </span>
                   </li>

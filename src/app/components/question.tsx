@@ -36,14 +36,13 @@ export function Question() {
       style={{ backgroundColor: "rgba(244, 243, 240, 1)" }}
     >
       <Container>
-        <div className="flex gap-14 items-start">
-
-          {/* ── Left: heading + image ── */}
-          <div className="flex flex-col" style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-14">
+          {/* ── Title + description + image (vertical; design: image between copy and FAQ) ── */}
+          <div className="flex min-w-0 flex-col gap-6 text-center md:flex-1 md:gap-8 md:text-left">
             <h2
-              className="manrope-regular mb-4"
+              className="manrope-regular"
               style={{
-                fontSize: "40px",
+                fontSize: "clamp(24px, 5vw, 40px)",
                 fontWeight: 400,
                 lineHeight: "140%",
                 letterSpacing: "0%",
@@ -53,46 +52,38 @@ export function Question() {
               Frequently Asked Questions
             </h2>
             <p
-              className="manrope-regular mb-8"
+              className="manrope-regular mx-auto max-w-[min(100%,420px)] md:mx-0 md:max-w-none"
               style={{ fontSize: "16px", lineHeight: "150%", color: "rgba(50,50,50,0.7)" }}
             >
               Answers to the most common questions, so you can focus on enjoying
               your time with us.
-            </p>           
-            <div
-              className="overflow-hidden"
-              style={{ borderRadius: "1px", width: "100%" }}
-            >
+            </p>
+            <div className="w-full overflow-hidden rounded-[1px] bg-[rgba(50,50,50,0.04)]">
               <img
                 src={QnASrc}
                 alt="Hotel interior"
                 draggable={false}
-                className="w-full h-full object-cover"
-                style={{ display: "block" }}
+                className="block aspect-[16/10] h-auto w-full object-cover md:aspect-auto md:max-h-[min(360px,50vh)] md:w-full md:object-cover"
               />
             </div>
           </div>
 
-          {/* ── Right: accordion ── */}
-          <div className="flex flex-col gap-6" style={{ flex: 1, minWidth: 0 }}>
+          {/* ── Accordion — stacked cards below image on mobile, right column on desktop ── */}
+          <div className="flex min-w-0 w-full flex-col gap-4 md:flex-1 md:gap-5">
             {FAQS.map((item, i) => {
               const isOpen = openIdx === i;
               return (
                 <div
                   key={i}
-                  className="overflow-hidden"
-                  style={{
-                    backgroundColor: "rgba(255,255,255,1)",
-                    borderRadius: "8px",
-                  }}
+                  className="overflow-hidden bg-white shadow-sm"
+                  style={{ borderRadius: "8px" }}
                 >
-                  {/* Question row */}
                   <button
                     type="button"
                     onClick={() => setOpenIdx(isOpen ? -1 : i)}
-                    className="manrope-regular w-full flex items-center justify-between text-left"
+                    className="manrope-regular flex w-full items-start justify-between gap-4 text-left"
                     style={{
-                      padding: "18px 20px",
+                      padding: "20px 22px",
                       fontSize: "15px",
                       fontWeight: 400,
                       color: "rgba(50,50,50,1)",
@@ -101,15 +92,14 @@ export function Question() {
                       cursor: "pointer",
                     }}
                   >
-                    <span>{item.q}</span>
+                    <span className="min-w-0 flex-1 leading-snug">{item.q}</span>
                     <img
                       src={ArrowDownSrc}
                       alt=""
+                      className="mt-0.5 flex-shrink-0"
                       style={{
                         width: "18px",
                         height: "auto",
-                        flexShrink: 0,
-                        marginLeft: "16px",
                         filter:
                           "brightness(0) invert(67%) sepia(10%) saturate(675%) hue-rotate(358deg) brightness(89%) contrast(89%)",
                         transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
@@ -118,31 +108,32 @@ export function Question() {
                     />
                   </button>
 
-                  {/* Answer — smooth expand/collapse via max-height */}
                   <div
+                    className="grid ease-out motion-reduce:transition-none"
                     style={{
-                      maxHeight: isOpen ? "300px" : "0px",
-                      overflow: "hidden",
-                      transition: "max-height 0.35s cubic-bezier(0.4,0,0.2,1)",
+                      gridTemplateRows: isOpen ? "1fr" : "0fr",
+                      transition: "grid-template-rows 0.35s cubic-bezier(0.4,0,0.2,1)",
                     }}
                   >
-                    <p
-                      className="manrope-regular"
-                      style={{
-                        padding: "0 20px 18px",
-                        fontSize: "14px",
-                        lineHeight: "165%",
-                        color: "rgba(50,50,50,0.8)",
-                      }}
-                    >
-                      {item.a}
-                    </p>
+                    <div className="min-h-0 overflow-hidden">
+                      <p
+                        className="manrope-regular"
+                        style={{
+                          padding: "0 22px 20px",
+                          marginTop: "-4px",
+                          fontSize: "14px",
+                          lineHeight: "165%",
+                          color: "rgba(50,50,50,0.8)",
+                        }}
+                      >
+                        {item.a}
+                      </p>
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
-
         </div>
       </Container>
     </section>

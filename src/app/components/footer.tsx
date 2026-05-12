@@ -24,10 +24,19 @@ function copyToClipboard(text: string, label: string) {
 }
 
 const headingClass =
-  "manrope-regular mb-4 text-[14px] font-semibold leading-none tracking-normal text-[rgba(255,255,255,1)]";
+  "manrope-regular mb-3 text-left text-[14px] font-semibold leading-none tracking-normal text-[rgba(255,255,255,1)] lg:mb-4";
 
 const linkClass =
-  "manrope-regular block text-[14px] font-normal leading-normal text-[rgba(255,255,255,1)] transition-opacity opacity-80 hover:opacity-100";
+  "manrope-regular block text-left text-[14px] font-normal leading-normal text-[rgba(255,255,255,1)] transition-opacity opacity-80 hover:opacity-100";
+
+const contactRow =
+  "flex w-full items-center gap-3 px-3 py-2.5";
+
+const contactBoxStyle = {
+  border: "1px solid rgba(255, 255, 255, 0.22)",
+  borderRadius: 8,
+  backgroundColor: "rgba(255, 255, 255, 0.04)",
+} as const;
 
 export function Footer() {
   return (
@@ -37,25 +46,31 @@ export function Footer() {
       style={{ backgroundColor: "rgba(50, 50, 50, 1)" }}
     >
       <Container className="px-6 py-12 md:py-14">
-        {/* Top: four columns, top-aligned like reference */}
-        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-[3fr_0.9fr_0.9fr_2fr] lg:gap-x-12 lg:gap-y-10">
-          {/* Brand + address — kolom pertama lebih lebar (memanjang) */}
-          <div className="flex min-w-0 w-full flex-col lg:pr-4">
-            <a href="#" className="mb-6 flex items-center gap-3" aria-label="Home">
+        {/*
+          Mobile: [ brand full width, centered ]
+                  [ Links | Legal ] 2 cols
+                  [ Contact full ]
+          Desktop (lg): 4 columns — brand | Links | Legal | Contact
+        */}
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,2fr)] lg:gap-x-12 lg:gap-y-10">
+          {/* Brand + address — centered on mobile, left on desktop */}
+          <div className="col-span-2 flex flex-col items-center text-center lg:col-span-1 lg:items-start lg:pr-4 lg:text-left">
+            <a href="#" className="flex items-center justify-center gap-3 lg:justify-start" aria-label="Home">
               <img src={logomarkSrc} alt="" width={50} height={40} className="block shrink-0" />
               <img src={logotypeSrc} alt="Logoipsum" width={163} height={33} className="block h-[33px] w-auto max-w-full" />
             </a>
             <p
-              className="manrope-regular mt-6 max-w-md text-[14px] leading-[1.55]"
+              className="manrope-regular mt-4 max-w-md text-[14px] leading-[1.55] lg:mt-6"
               style={{ color: "rgba(255, 255, 255, 0.8)" }}
             >
-              San Valentino,<br />
+              San Valentino,
+              <br />
               South Tyrol, Italy.
             </p>
           </div>
 
           {/* Links */}
-          <div>
+          <div className="min-w-0">
             <h3 className={headingClass}>Links</h3>
             <nav className="flex flex-col gap-[14px]">
               <a href="#" className={linkClass}>
@@ -73,9 +88,9 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Legals */}
-          <div>
-            <h3 className={headingClass}>Legals</h3>
+          {/* Legal (label per mockup) */}
+          <div className="min-w-0">
+            <h3 className={headingClass}>Legal</h3>
             <nav className="flex flex-col gap-[14px]">
               <a href="#" className={linkClass}>
                 Imprint
@@ -92,17 +107,11 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Contact */}
-          <div>
+          {/* Contact + social — full width row on mobile */}
+          <div className="col-span-2 min-w-0 lg:col-span-1">
             <h3 className={headingClass}>Contact</h3>
 
-            <div
-              className="mb-3 flex w-full items-center gap-3 px-3 py-2.5"
-              style={{
-                border: "1px solid rgba(255, 255, 255, 0.22)",
-                borderRadius: 8,
-              }}
-            >
+            <div className={`${contactRow} mb-3`} style={contactBoxStyle}>
               <img src={TelephoneSrc} alt="" width={18} height={18} style={iconLight} className="shrink-0" />
               <span className="manrope-regular min-w-0 flex-1 truncate text-[14px] text-[rgba(255,255,255,1)]">
                 {PHONE}
@@ -110,20 +119,14 @@ export function Footer() {
               <button
                 type="button"
                 aria-label="Copy phone number"
-                className="shrink-0 rounded p-1 opacity-90 transition-opacity hover:opacity-100"
+                className="shrink-0 rounded p-1 opacity-50 transition-opacity hover:opacity-90"
                 onClick={() => copyToClipboard(PHONE, "Phone number")}
               >
                 <img src={CopySrc} alt="" width={16} height={16} style={iconLight} />
               </button>
             </div>
 
-            <div
-              className="mb-5 flex w-full items-center gap-3 px-3 py-2.5"
-              style={{
-                border: "1px solid rgba(255, 255, 255, 0.22)",
-                borderRadius: 8,
-              }}
-            >
+            <div className={`${contactRow} mb-5`} style={contactBoxStyle}>
               <img src={MailSrc} alt="" width={18} height={18} style={iconLight} className="shrink-0" />
               <span className="manrope-regular min-w-0 flex-1 truncate text-[14px] text-[rgba(255,255,255,1)]">
                 {EMAIL}
@@ -131,14 +134,14 @@ export function Footer() {
               <button
                 type="button"
                 aria-label="Copy email"
-                className="shrink-0 rounded p-1 opacity-90 transition-opacity hover:opacity-100"
+                className="shrink-0 rounded p-1 opacity-50 transition-opacity hover:opacity-90"
                 onClick={() => copyToClipboard(EMAIL, "Email")}
               >
                 <img src={CopySrc} alt="" width={16} height={16} style={iconLight} />
               </button>
             </div>
 
-            <div className="flex w-full items-center gap-2.5">
+            <div className="flex w-full flex-wrap items-center gap-2.5">
               {[
                 { src: YoutubeSrc, label: "YouTube", href: "#" },
                 { src: WhatsappSrc, label: "WhatsApp", href: "#" },
@@ -159,17 +162,17 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Full-width rule + bottom row */}
+        {/* Bottom: divider + copyright + attribution (left stack on mobile) */}
         <div
           className="mt-10 border-t pt-6 sm:mt-12 sm:pt-8"
-          style={{ borderColor: "rgba(255, 255, 255, 0.12)" }}
+          style={{ borderColor: "rgba(255, 255, 255, 0.15)" }}
         >
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-            <p className="manrope-regular text-[16px] text-[rgba(255,255,255,1)] sm:order-1">
+          <div className="flex flex-col items-start gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+            <p className="manrope-regular text-[14px] text-[rgba(255,255,255,0.9)] lg:text-[16px]">
               © 2026 Hotel Ipsum
             </p>
-            <div className="flex w-[164px] max-w-full flex-col items-end gap-1.5 sm:order-2 sm:ml-auto">
-              <span className="manrope-regular w-full text-right text-[16px] leading-snug text-[rgba(255,255,255,1)]">
+            <div className="flex flex-col items-start gap-2 lg:items-end">
+              <span className="manrope-regular text-left text-[14px] leading-snug text-[rgba(255,255,255,0.9)] lg:text-right lg:text-[16px]">
                 Design and Code by
               </span>
               <img
