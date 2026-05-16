@@ -37,8 +37,15 @@ type Props = {
 
 const MODAL_H = 480; /* desktop minimum height */
 
+/** Embla: duration lebih rendah = geser tombol/dot lebih cepat; ~17 tetap halus */
+const MODAL_EMBLA_OPTIONS = {
+  loop: true,
+  duration: 17,
+  skipSnaps: false,
+} as const;
+
 export function RoomModal({ room, onClose }: Props) {
-  const [modalEmblaRef, modalEmblaApi] = useEmblaCarousel({ loop: true, duration: 30 });
+  const [modalEmblaRef, modalEmblaApi] = useEmblaCarousel(MODAL_EMBLA_OPTIONS);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const closingRef = useRef(false);
@@ -172,7 +179,7 @@ export function RoomModal({ room, onClose }: Props) {
                     border: "none",
                     padding: 0,
                     cursor: "pointer",
-                    transition: "width 0.3s, background-color 0.3s",
+                    transition: "width 0.22s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.22s cubic-bezier(0.22, 1, 0.36, 1)",
                   }}
                 />
               ))}

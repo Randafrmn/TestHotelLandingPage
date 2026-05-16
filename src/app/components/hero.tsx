@@ -75,9 +75,9 @@ export function Hero() {
               <img
                 src={slide.src}
                 alt={slide.alt}
-                className="h-full w-full object-cover [transform:translateZ(0)] [will-change:transform]"
+                className="h-full w-full object-cover [transform:translateZ(0)]"
                 loading="eager"
-                decoding="sync"
+                decoding={i === 0 ? "sync" : "async"}
                 fetchPriority={i === 0 ? "high" : "auto"}
                 draggable={false}
               />
