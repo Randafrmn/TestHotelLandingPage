@@ -62,7 +62,7 @@ export function Hero() {
     <section
       data-section-animate
       data-entrance-pace="slow"
-      className="relative min-h-screen w-full overflow-visible"
+      className="relative min-h-screen w-full overflow-x-hidden overflow-y-visible"
     >
       {/* ── Carousel ── */}
       <div ref={emblaRef} className="absolute inset-0 overflow-hidden">
@@ -132,11 +132,12 @@ export function Hero() {
 
 /* ─── Cinematic hero title (first load only) ───────────────────── */
 
-const HERO_TITLE_HOLD_SEC = 3;
-/** Gerak turun ke posisi awal — dipercepat */
-const HERO_TITLE_MOVE_SEC = 4;
-/** Satu siklus gradien bergeser kanan → kiri (loop) */
-const HERO_TITLE_GRADIENT_LOOP_SEC = 7;
+/** Judul di tengah — singkat, tidak terasa delay */
+const HERO_TITLE_HOLD_SEC = 1.35;
+/** Turun ke posisi akhir — lebih responsif */
+const HERO_TITLE_MOVE_SEC = 2.45;
+/** Satu siklus gradien kanan → kiri */
+const HERO_TITLE_GRADIENT_LOOP_SEC = 5.2;
 
 /** Sumbu 90° + lebar 200% agar geser horizontal halus */
 const HERO_TITLE_SHINE_GRADIENT = `linear-gradient(

@@ -27,7 +27,7 @@ function presetClosed(el: HTMLElement, variant: RadixPresenceVariant) {
     case "smooth":
       gsap.set(el, {
         autoAlpha: 0,
-        filter: "blur(16px) brightness(0.8)",
+        filter: "blur(12px) brightness(0.82)",
       });
       break;
     case "sheet-right":
@@ -67,12 +67,12 @@ function animateOpen(el: HTMLElement, variant: RadixPresenceVariant) {
     case "smooth":
       gsap.fromTo(
         el,
-        { autoAlpha: 0, filter: "blur(16px) brightness(0.8)" },
+        { autoAlpha: 0, filter: "blur(12px) brightness(0.82)" },
         {
           autoAlpha: 1,
           filter: "blur(0px) brightness(1)",
-          duration: 0.82,
-          ease: "power3.out",
+          duration: 0.48,
+          ease: "power2.out",
         },
       );
       break;
@@ -131,9 +131,9 @@ function animateClosed(el: HTMLElement, variant: RadixPresenceVariant) {
     case "smooth":
       gsap.to(el, {
         autoAlpha: 0,
-        filter: "blur(12px) brightness(0.88)",
-        duration: 0.52,
-        ease: "power2.inOut",
+        filter: "blur(8px) brightness(0.9)",
+        duration: 0.34,
+        ease: "power2.in",
       });
       break;
     case "sheet-right":
