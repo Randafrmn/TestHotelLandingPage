@@ -14,7 +14,7 @@ export default function App() {
   useSectionEntranceAnimations();
 
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="min-h-screen w-full overflow-x-hidden bg-background">
       <Navbar transparent />
       <Hero />
       <About />

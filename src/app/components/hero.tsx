@@ -110,8 +110,8 @@ export function Hero() {
       </div>
 
       {/* ── Hero content — pinned to bottom ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 pb-4 sm:pb-10">
-        <Container className="flex flex-col items-center text-center text-white">
+      <div className="absolute bottom-0 left-0 right-0 z-10 overflow-x-hidden pb-4 sm:pb-10">
+        <Container className="flex min-w-0 max-w-full flex-col items-center text-center text-white">
 
           <CinematicHeroTitle />
 
@@ -132,21 +132,22 @@ export function Hero() {
 
 /* ─── Cinematic hero title (first load only) ───────────────────── */
 
-/** Judul di tengah — singkat, tidak terasa delay */
-const HERO_TITLE_HOLD_SEC = 1.35;
-/** Turun ke posisi akhir — lebih responsif */
-const HERO_TITLE_MOVE_SEC = 2.45;
-/** Satu siklus gradien kanan → kiri */
-const HERO_TITLE_GRADIENT_LOOP_SEC = 5.2;
+const HERO_TITLE_HOLD_SEC = 3;
+/** Gerak turun ke posisi awal — dipercepat */
+const HERO_TITLE_MOVE_SEC = 4;
+/** Satu siklus gradien bergeser kanan → kiri (loop) */
+const HERO_TITLE_GRADIENT_LOOP_SEC = 7;
 
-/** Sumbu 90° + lebar 200% agar geser horizontal halus */
+/** Sumbu 90° + lebar 200% — aksen utama #4B4128 */
 const HERO_TITLE_SHINE_GRADIENT = `linear-gradient(
   90deg,
-  #f5f2ed 0%,
-  #d8ccbb 20%,
-  #A49781 50%,
-  #b7ab96 75%,
-  #f5f2ed 100%
+  rgba(255,255,255,0.95) 0%,
+  #c9c2b0 18%,
+  #6b5f45 42%,
+  #4B4128 50%,
+  #6b5f45 58%,
+  #c9c2b0 82%,
+  rgba(255,255,255,0.95) 100%
 )`;
 
 function CinematicHeroTitle() {
@@ -244,10 +245,10 @@ function CinematicHeroTitle() {
   return (
     <h1
       ref={h1Ref}
-      className="manrope-regular mb-4 w-full max-w-full text-center text-[clamp(0.82rem,3.5vw,1.12rem)] text-white will-change-transform [transform:translateZ(0)] sm:mb-6 sm:text-[clamp(1rem,4.8vw,2rem)]"
+      className="manrope-regular mx-auto mb-4 w-full min-w-0 max-w-full px-2 text-center text-[clamp(0.82rem,3.5vw,1.12rem)] text-white will-change-transform [transform:translateZ(0)] sm:mb-6 sm:px-0 sm:text-[clamp(1rem,4.8vw,2rem)]"
       style={{ lineHeight: 1.08 }}
     >
-      <span ref={shineRef} className="inline-block max-w-full px-0.5">
+      <span ref={shineRef} className="inline-block min-w-0 max-w-full px-0.5">
         The Silence of the Alps, Redefined.
       </span>
     </h1>

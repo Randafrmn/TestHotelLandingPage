@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { playAuraModalEnter, playAuraModalExit } from "@/app/lib/overlayMotion";
+import { motion } from "motion/react";
 import { CarouselArrowButton } from "./shared/CarouselArrowButton";
 import { GsapLiquidFillButton } from "./shared/GsapLiquidFillButton";
 import ArrowDetailSrc from "@/assets/icons/arrowdetaildesktop.svg";
@@ -41,33 +41,16 @@ export function RoomModal({ room, onClose }: Props) {
   const [modalEmblaRef, modalEmblaApi] = useEmblaCarousel({ loop: true, duration: 30 });
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const backdropRef = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
   const closingRef = useRef(false);
-
-  useLayoutEffect(() => {
-    const b = backdropRef.current;
-    const p = panelRef.current;
-    if (!b || !p) return;
-    playAuraModalEnter(b, p);
-  }, []);
 
   const requestClose = useCallback(
     (afterComplete?: () => void) => {
       if (closingRef.current) return;
-      const b = backdropRef.current;
-      const p = panelRef.current;
-      if (!b || !p) {
-        onClose();
-        afterComplete?.();
-        return;
-      }
       closingRef.current = true;
-      playAuraModalExit(b, p, () => {
-        closingRef.current = false;
-        onClose();
-        afterComplete?.();
-      });
+      onClose();
+      if (afterComplete) {
+        window.setTimeout(afterComplete, 280);
+      }
     },
     [onClose],
   );
@@ -102,15 +85,22 @@ export function RoomModal({ room, onClose }: Props) {
   const scrollNext = useCallback(() => modalEmblaApi?.scrollNext(), [modalEmblaApi]);
 
   return (
-    <div
-      ref={backdropRef}
+    <motion.div
+      role="presentation"
       className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 py-8 md:p-4 md:py-10"
-      style={{ backgroundColor: "rgba(0,0,0,0.35)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
-      onClick={() => requestClose()}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <div
-        ref={panelRef}
-        className="relative my-auto flex w-full overflow-hidden bg-white [transform-style:preserve-3d] will-change-transform"
+        aria-hidden
+        className="absolute inset-0 bg-black/35 backdrop-blur-[8px]"
+        style={{ WebkitBackdropFilter: "blur(8px)" }}
+        onClick={() => requestClose()}
+      />
+      <motion.div
+        className="relative z-10 my-auto flex w-full overflow-hidden bg-white"
         style={{
           borderRadius: "12px",
           maxWidth: isMobile ? "350px" : "1060px",
@@ -118,6 +108,9 @@ export function RoomModal({ room, onClose }: Props) {
           flexDirection: isMobile ? "column" : "row",
           gap: isMobile ? "8px" : "0px",
         }}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.26, delay: 0.03, ease: [0.22, 1, 0.36, 1] }}
         onClick={(e) => e.stopPropagation()}
       >
 
@@ -338,7 +331,7 @@ export function RoomModal({ room, onClose }: Props) {
               fillColor="#8f8370"
               defaultTextColor="#ffffff"
               hoverTextColor="#ffffff"
-              className="manrope-regular flex-1 rounded-[8px] border border-transparent transition-[border-color] duration-700 ease-out hover:border-white/25"
+              className="manrope-regular flex-1 rounded-[8px] border border-transparent transition-[border-color] duration-300 ease-out hover:border-white/25"
               style={{
                 padding: isMobile ? "9px 0" : "11px 0",
                 fontSize: isMobile ? "10px" : "11px",
@@ -359,7 +352,7 @@ export function RoomModal({ room, onClose }: Props) {
             </GsapLiquidFillButton>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

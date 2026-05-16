@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatePresence } from "motion/react";
 import type { CSSProperties } from "react";
 import { Container } from "./shared/Container";
 import { ModalMemories } from "./modal-memories";
@@ -158,7 +159,9 @@ export function VisualMemories() {
         </div>
       </Container>
 
-      {galleryOpen && <ModalMemories onClose={() => setGalleryOpen(false)} />}
+      <AnimatePresence>
+        {galleryOpen && <ModalMemories key="gallery" onClose={() => setGalleryOpen(false)} />}
+      </AnimatePresence>
     </section>
   );
 }

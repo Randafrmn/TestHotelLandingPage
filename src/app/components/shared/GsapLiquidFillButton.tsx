@@ -56,11 +56,11 @@ export function GsapLiquidFillButton({
   const j = useMemo(() => motionJitterFromKey(motionKey), [motionKey]);
   const timing = useMemo(
     () => ({
-      fillIn: 1.38 + (j % 11) * 0.02,
-      fillOut: 1.06 + (j % 9) * 0.02,
-      textIn: 0.94 + (j % 8) * 0.02,
-      textOut: 0.84 + (j % 7) * 0.018,
-      textDelay: 0.08 + (j % 5) * 0.012,
+      fillIn: 0.45 + (j % 5) * 0.012,
+      fillOut: 0.38 + (j % 4) * 0.01,
+      textIn: 0.28 + (j % 4) * 0.008,
+      textOut: 0.26 + (j % 3) * 0.006,
+      textDelay: 0,
     }),
     [j],
   );
@@ -83,13 +83,13 @@ export function GsapLiquidFillButton({
       webkitMaskPosition: "0% 0%",
       maskPosition: "0% 0%",
       duration: timing.fillIn,
-      ease: "expo.out",
+      ease: "power2.out",
     });
     gsap.to(text, {
       color: hoverTextColor,
       duration: timing.textIn,
       delay: timing.textDelay,
-      ease: "sine.out",
+      ease: "power2.out",
     });
   }, [disabled, hoverTextColor, timing.fillIn, timing.textDelay, timing.textIn]);
 
@@ -103,7 +103,7 @@ export function GsapLiquidFillButton({
       webkitMaskPosition: "100% 100%",
       maskPosition: "100% 100%",
       duration: timing.fillOut,
-      ease: "sine.inOut",
+      ease: "power2.inOut",
     });
     gsap.to(text, {
       color: defaultTextColor,

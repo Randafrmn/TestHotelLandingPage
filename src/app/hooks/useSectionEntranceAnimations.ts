@@ -21,11 +21,11 @@ const DEFAULT_ENTRANCE: EntranceConfig = {
   ease: "power2.out",
 };
 
-/** Hero: sedikit lebih lambat dari default, tapi tidak “nunggu” lama */
+/** Hero title + booking bar: slower, softer stagger. */
 const SLOW_ENTRANCE: EntranceConfig = {
-  fromY: 14,
-  duration: 0.72,
-  staggerEach: 0.075,
+  fromY: 16,
+  duration: 1.12,
+  staggerEach: 0.14,
   ease: "power3.out",
 };
 

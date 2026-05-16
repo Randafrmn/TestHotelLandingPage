@@ -1,14 +1,3 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
-
-/* Stop horizontal page scroll when hero title scales/translates (desktop) */
-html,
-body {
-  overflow-x: hidden;
-}
-
-#root {
-  overflow-x: hidden;
-  min-height: 100%;
-}

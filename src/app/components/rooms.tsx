@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import { AnimatePresence } from "motion/react";
 import { Container } from "./shared/Container";
 import { GsapLiquidFillButton } from "./shared/GsapLiquidFillButton";
 import { SliderNavButtons } from "./shared/SliderNavButtons";
@@ -292,7 +293,7 @@ export function Rooms() {
                 <GsapLiquidFillButton
                   type="button"
                   motionKey={room.name}
-                  className="manrope-regular w-full rounded-[8px] border border-[rgba(50,50,50,0.2)] py-3 text-xs uppercase tracking-[0.15em] transition-[border-color] duration-700 ease-out hover:border-[#A49781]/40 active:border-[#A49781]/40"
+                  className="manrope-regular w-full rounded-[8px] border border-[rgba(50,50,50,0.2)] py-3 text-xs uppercase tracking-[0.15em] transition-[border-color] duration-300 ease-out hover:border-[#A49781]/40 active:border-[#A49781]/40"
                   aria-label={`See details for ${room.name}`}
                   onClick={() => setActiveRoom(room)}
                 >
@@ -317,9 +318,11 @@ export function Rooms() {
       </div>
 
       {/* ── Modal ── */}
-      {activeRoom && (
-        <RoomModal room={activeRoom} onClose={() => setActiveRoom(null)} />
-      )}
+      <AnimatePresence>
+        {activeRoom && (
+          <RoomModal key={activeRoom.name} room={activeRoom} onClose={() => setActiveRoom(null)} />
+        )}
+      </AnimatePresence>
 
     </section>
   );

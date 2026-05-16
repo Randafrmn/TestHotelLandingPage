@@ -1023,7 +1023,7 @@ export function Reserve() {
                 fillColor="#8f8370"
                 defaultTextColor="#ffffff"
                 hoverTextColor="#ffffff"
-                className="manrope-regular w-full rounded-lg border border-transparent py-3.5 text-center transition-[border-color] duration-700 ease-out hover:border-[rgba(50,50,50,0.15)] md:w-auto md:px-7 md:py-[13px]"
+                className="manrope-regular w-full rounded-lg border border-transparent py-3.5 text-center transition-[border-color] duration-300 ease-out hover:border-[rgba(50,50,50,0.15)] md:w-auto md:px-7 md:py-[13px]"
                 style={{
                   fontSize: 11,
                   letterSpacing: "0.15em",
